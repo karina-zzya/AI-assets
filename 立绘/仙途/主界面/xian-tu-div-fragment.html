@@ -1,0 +1,785 @@
+<div id="xian-tu-embed">
+<style>
+#xian-tu-embed{--xt-night:#07111d;--xt-ivory:#f3f2ec;--xt-gold:#d5c49f;--xt-cyan:#b8e2e9;position:relative;isolation:isolate;width:100%;height:100svh;min-height:620px;overflow:hidden;background:#06131f;color:var(--xt-ivory);font-family:"Noto Serif SC","Songti SC","SimSun",serif;font-size:16px;font-weight:400;line-height:1.5;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;text-align:left;direction:ltr;unicode-bidi:normal;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#xian-tu-embed *{box-sizing:border-box}
+/* 防宿主页的 *{...} 之类全局规则直接命中组件内部元素（继承防护挡不住"直接匹配"）：
+   本条特异性 (1,0,0)，而组件自身针对具体元素的规则是 (1,1,0) 以上，所以只会拦住外来规则、
+   不会影响组件自己的样式。line-height 不在其中——组件有依赖继承 1.5 的元素，不能一刀切。 */
+#xian-tu-embed *,#xian-tu-embed *::before,#xian-tu-embed *::after{letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;font-style:normal;text-align:left;direction:ltr;unicode-bidi:normal}
+/* 把状态控件放进可见按钮并覆盖按钮本身，焦点始终落在用户点击的位置。 */
+#xian-tu-embed .xt-control,#xian-tu-embed .xt-tab-control{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+#xian-tu-embed .xt-back{position:relative}
+#xian-tu-embed .xt-tab-control{z-index:2}
+#xian-tu-embed .xt-wheel-build:has(input:focus-visible),#xian-tu-embed .xt-back:has(input:focus-visible),#xian-tu-embed .xt-tab:has(input:focus-visible){outline:2px solid var(--xt-cyan);outline-offset:2px}
+#xian-tu-embed .xt-home,#xian-tu-embed .xt-builder{position:absolute;inset:0;overflow:hidden}
+#xian-tu-embed .xt-builder{display:none}
+/* 首页不再是 display:none（那样按钮来不及滑出），改为：先等按钮滑出(0.3s)，再淡出，最后 visibility 隐藏。
+   z-index:6 是为了让淡出中的首页压在 builder 之上，否则 builder 会瞬间盖住滑出动画 */
+/* 构建页是"透明覆盖层"：首页不再隐藏，让背景与角色透出来；只把首页自身的 UI 层淡出、整体交出点击。
+   z-index:0 让首页成为低层，构建页子元素(z-index:1)压在它上面 */
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home{pointer-events:none;z-index:0}
+#xian-tu-embed #xt-view-builder:checked ~ .xt-builder{display:grid}
+#xian-tu-embed .xt-home{background:#071624}
+#xian-tu-embed .xt-home .xt-title,#xian-tu-embed .xt-home .xt-orbit,#xian-tu-embed .xt-home .xt-sparks,#xian-tu-embed .xt-home .xt-mist,#xian-tu-embed .xt-home .xt-wheel{transition:opacity .3s ease}
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-title,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-orbit,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-sparks,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-mist,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel{opacity:0;transition:opacity .26s ease .16s}
+/* 角色本体只做平移、不缩放：用"左边缘锚点"定位——left:50% 加上 translate 后，
+   左边缘落在 (50vw + tx) 处，与自身宽度无关，所以任何窗口宽度下露出的比例都可控。
+   基准：左边缘 34vw；窄屏往左收（露出更多）。
+   ⚠ 但"该居中时就居中"：≤700px 时构建页是整列铺满（侧栏变成顶部横条），右侧没有留白可言，
+     这时保留首页原本的居中定位（-50%，竖屏 -54%），不再右锚。
+   该选择器特异性 2 id + 3 class，强于下方媒体查询里的 .xt-character-frame，无需调整顺序。 */
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{translate:-16vw 0}
+@media(max-width:760px){#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{translate:-22vw 0}}
+@media(max-width:700px){#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{translate:-50% 0}}
+@media(max-width:560px) and (orientation:portrait){#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{translate:-54% 0}}
+/* 覆盖层下文字容易压在亮部上（例如她的白裙），把底图与角色压暗来保证对比度——
+   仍然是透明的，只是不再干扰阅读 */
+#xian-tu-embed .xt-home .xt-scene{transition:filter .55s ease}
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-scene{filter:brightness(.32) saturate(.7)}
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{filter:brightness(.58) saturate(.85)}
+/* 覆盖层下文字容易压在亮部上，补一点文字阴影保可读 */
+#xian-tu-embed .xt-builder{text-shadow:0 1px 8px #02060ccc}
+#xian-tu-embed .xt-scene{position:absolute;inset:-4%;background:url("https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-background.png") center 46%/cover no-repeat;filter:brightness(.76) saturate(.83)}
+#xian-tu-embed .xt-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,10,22,.83),rgba(3,10,22,.5) 26%,rgba(3,10,22,.08) 59%,rgba(3,10,22,.38)),linear-gradient(0deg,rgba(3,10,22,.72),transparent 42%)}
+#xian-tu-embed .xt-orbit{position:absolute;left:50%;top:5%;width:min(76vw,1000px);aspect-ratio:1;border:2px solid rgba(212,238,244,.4);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 0 70px rgba(198,228,232,.02)}
+#xian-tu-embed .xt-orbit:before{content:"";position:absolute;inset:9%;border:2px dashed rgba(217,238,238,.28);border-radius:50%;animation:xt-orbit 80s linear infinite}
+@keyframes xt-orbit{to{transform:rotate(360deg)}}
+#xian-tu-embed .xt-character-frame{position:absolute;left:50%;bottom:-2%;height:min(97svh,1050px);aspect-ratio:1379/1141;translate:-50% 0;scale:1;transform-origin:50% 100%;transition:translate .66s cubic-bezier(.22,1,.36,1),scale .66s cubic-bezier(.22,1,.36,1),filter .55s ease;pointer-events:none}
+#xian-tu-embed .xt-character{display:block;height:100%;width:auto;max-width:none;transform-origin:50% 100%;will-change:transform;animation:xt-idle 7.5s ease-in-out infinite;filter:drop-shadow(0 18px 35px rgba(2,12,27,.35))}
+#xian-tu-embed .xt-mist{position:absolute;left:20%;bottom:-15%;width:80%;height:33%;background:radial-gradient(ellipse,rgba(183,222,231,.29),transparent 68%);filter:blur(38px);pointer-events:none}
+#xian-tu-embed .xt-title{position:absolute;top:55%;left:50%;width:100%;margin:0;text-align:center;transform:translate(-50%,-50%);pointer-events:none;color:#f5f4ef;font:400 clamp(102px,8.3vw,160px)/1.2 "Zhi Mang Xing","Ma Shan Zheng","STXingkai","KaiTi",cursive;letter-spacing:-.06em;white-space:nowrap}
+/* 标题已改为透明艺术字图片（与宿主页 home.css 用同一套尺寸值，两套实现渲染一致）。
+   原先的 skew/rotate 已去掉：斜度已经烘焙在图片里，否则会二次倾斜。 */
+#xian-tu-embed .xt-title img{display:block;width:clamp(440px,36vw,700px);max-width:100%;height:auto;margin:0 auto}
+#xian-tu-embed .xt-wheel{position:absolute;inset:0;pointer-events:none}
+#xian-tu-embed .xt-wheel-track{position:absolute;left:13%;top:17%;width:76%;height:80%;border:2px solid rgba(214,240,248,.4);border-radius:50%;transform:rotate(-9deg);box-shadow:0 0 0 55px rgba(222,242,242,.018)}
+#xian-tu-embed .xt-wheel-item{position:absolute;pointer-events:auto;display:flex;align-items:center;gap:13px;width:215px;min-height:67px;padding:6px 14px;border-radius:20px;background:linear-gradient(90deg,rgba(4,14,26,.78) 0%,rgba(4,14,26,.44) 45%,rgba(4,14,26,.12) 76%,rgba(4,14,26,0) 100%);color:#eef2ee;text-align:left;text-shadow:0 2px 12px #020b16;text-decoration:none}
+#xian-tu-embed label.xt-wheel-item{cursor:pointer}
+#xian-tu-embed label.xt-wheel-item:hover,#xian-tu-embed label.xt-wheel-item:focus-visible{filter:brightness(1.35);transform:translateX(5px);outline:1px solid var(--xt-cyan)}
+#xian-tu-embed .xt-wheel-item:after{content:"";position:absolute;bottom:0;left:67px;right:16px;height:1px;background:linear-gradient(90deg,rgba(228,219,188,.8),rgba(228,219,188,.06))}
+#xian-tu-embed .xt-wheel-factions:after,#xian-tu-embed .xt-wheel-paths:after,#xian-tu-embed .xt-wheel-relics:after{left:16px;right:67px;background:linear-gradient(270deg,rgba(228,219,188,.8),rgba(228,219,188,.06))}
+#xian-tu-embed .xt-medallion{flex:0 0 53px;width:53px;height:53px;display:grid;place-items:center;border:1px solid rgba(231,230,206,.92);border-radius:50%;background:radial-gradient(circle,rgba(14,51,65,.94) 0 38%,rgba(11,29,47,.64) 39% 100%);box-shadow:0 0 0 5px rgba(226,237,228,.09),0 0 19px rgba(158,221,230,.21);font:28px "Ma Shan Zheng","STKaiti",serif;color:#eee9d7}
+#xian-tu-embed .xt-wheel-copy{display:block;white-space:nowrap}
+#xian-tu-embed .xt-wheel-copy small{display:block;color:#d9cba9;font:600 9px Arial,sans-serif;letter-spacing:.15em}
+#xian-tu-embed .xt-wheel-copy strong{display:block;margin-top:3px;font-size:18px;font-weight:500;letter-spacing:.18em}
+#xian-tu-embed .xt-wheel-build{left:6%;top:43%}#xian-tu-embed .xt-wheel-profile{left:10%;top:60%}#xian-tu-embed .xt-wheel-map{left:17%;top:78%}#xian-tu-embed .xt-wheel-factions{right:5%;top:26%}#xian-tu-embed .xt-wheel-paths{right:5%;top:48%}#xian-tu-embed .xt-wheel-relics{right:9%;top:70%}
+#xian-tu-embed .xt-wheel-factions,#xian-tu-embed .xt-wheel-paths,#xian-tu-embed .xt-wheel-relics{flex-direction:row-reverse;text-align:right;background:linear-gradient(270deg,rgba(4,14,26,.78) 0%,rgba(4,14,26,.44) 45%,rgba(4,14,26,.12) 76%,rgba(4,14,26,0) 100%)}
+#xian-tu-embed .xt-wheel-factions:after,#xian-tu-embed .xt-wheel-paths:after,#xian-tu-embed .xt-wheel-relics:after{left:8px;right:67px;background:linear-gradient(270deg,rgba(228,219,188,.8),rgba(228,219,188,.06))}
+#xian-tu-embed .xt-wheel-disabled{opacity:.8}
+#xian-tu-embed .xt-builder{grid-template-columns:252px minmax(0,1fr);background:radial-gradient(ellipse at 75% 23%,#345069 0%,#172d42 31%,#081423 71%)}
+#xian-tu-embed .xt-builder:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#07111dd9,#0a1727c7 45%,#101e2ab8);pointer-events:none}
+#xian-tu-embed .xt-sidebar,#xian-tu-embed .xt-content{position:relative;z-index:1;min-height:0}
+#xian-tu-embed .xt-sidebar{display:flex;flex-direction:column;border-right:1px solid #d9e9e630;background:linear-gradient(180deg,#071421eb,#0a1827e3 63%,#0b1b2cdb);box-shadow:16px 0 50px #020a15a6}
+#xian-tu-embed .xt-brand{padding:30px 26px 24px;border-bottom:1px solid #c5d5d226}
+#xian-tu-embed .xt-back{display:block;width:max-content;padding:4px 0;color:#c9dddf;font-size:13px;letter-spacing:.1em;cursor:pointer}
+#xian-tu-embed .xt-back:hover{color:white}
+#xian-tu-embed .xt-mark{margin-top:24px;font:34px "Zhi Mang Xing","Ma Shan Zheng",cursive;color:#f1f1e9;text-shadow:1px 2px 6px #000}
+#xian-tu-embed .xt-sidebar-title{display:flex;justify-content:space-between;align-items:baseline;padding:23px 25px 12px;color:#d9d6c4;font-size:17px;letter-spacing:.28em}
+#xian-tu-embed .xt-sidebar-title small{font:8px Arial,sans-serif;letter-spacing:.14em;color:#829ca5}
+#xian-tu-embed .xt-tabs{min-height:0;overflow:auto;padding:4px 12px 20px;scrollbar-width:thin}
+#xian-tu-embed .xt-tab{display:flex;align-items:center;gap:12px;min-height:46px;padding:8px 14px;border:1px solid transparent;color:#9eb4b9;cursor:pointer;letter-spacing:.15em;font-size:13px}
+#xian-tu-embed .xt-tab:hover{color:white;background:#a2c0c416}
+#xian-tu-embed .xt-tab-index{width:23px;color:#88a3ac;font:10px Arial,sans-serif}
+#xian-tu-embed .xt-sidebar-foot{margin-top:auto;padding:17px 25px;border-top:1px solid #c5d5d226;color:#a7b9ba;font-size:11px;letter-spacing:.12em}
+#xian-tu-embed .xt-content{overflow:auto;padding:clamp(32px,5vh,66px) clamp(30px,6vw,110px) 60px;scrollbar-width:thin}
+#xian-tu-embed .xt-heading{max-width:1100px;margin:0 auto 32px}
+#xian-tu-embed .xt-eyebrow{color:#b6d6d9;font:10px Arial,sans-serif;letter-spacing:.28em}
+#xian-tu-embed .xt-heading h2{margin:14px 0 3px;font:normal clamp(44px,4.5vw,70px)/1.15 "Ma Shan Zheng","STKaiti",serif;letter-spacing:.08em}
+#xian-tu-embed .xt-heading p{margin:0;color:#b6c7ca;font-size:13px;letter-spacing:.17em}
+#xian-tu-embed .xt-panel{max-width:1100px;margin:auto;border:1px solid #b9cdca5c;background:linear-gradient(135deg,#091827c9,#12283abe);box-shadow:0 28px 70px #020c19ad;backdrop-filter:blur(16px)}
+#xian-tu-embed .xt-panel-head{display:flex;justify-content:space-between;align-items:end;gap:12px;padding:30px 35px 23px;border-bottom:1px solid #b8c8c636}
+#xian-tu-embed .xt-code{color:#b6cbbd;font:10px Arial,sans-serif;letter-spacing:.28em}
+#xian-tu-embed .xt-panel-head h3{margin:7px 0 0;font-size:26px;font-weight:500;letter-spacing:.18em}
+#xian-tu-embed .xt-panel-head p{margin:7px 0 0;color:#a8bec3;font-size:12px}
+#xian-tu-embed .xt-count{color:#cfc5a9;font:11px Arial,sans-serif;letter-spacing:.12em;white-space:nowrap}
+#xian-tu-embed .xt-options{padding:29px 35px 36px}
+#xian-tu-embed .xt-group+.xt-group{margin-top:32px}
+#xian-tu-embed .xt-group h4{display:flex;align-items:center;gap:15px;margin:0 0 16px;color:#dbded4;font-size:14px;font-weight:500;letter-spacing:.2em}
+#xian-tu-embed .xt-group h4:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,#a9c3c267,transparent)}
+#xian-tu-embed .xt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#xian-tu-embed .xt-option{position:relative;display:flex;align-items:flex-start;gap:13px;min-height:88px;padding:17px;border:1px solid #b9cfca32;background:#c6e0de0a;color:#e7ede9;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+#xian-tu-embed .xt-option:hover{background:#c6e0de1b;border-color:#bfd7d076;transform:translateY(-2px)}
+#xian-tu-embed .xt-option:has(input:checked){background:linear-gradient(135deg,#99d3d230,#bad7c314);border-color:#d9e9d1ad;box-shadow:inset 0 0 0 1px #d6e9de1b}
+#xian-tu-embed .xt-option:has(input:focus-visible){outline:2px solid var(--xt-cyan);outline-offset:2px}
+#xian-tu-embed .xt-option input{position:absolute;width:1px;height:1px;opacity:0}
+#xian-tu-embed .xt-choice-mark{flex:0 0 20px;width:20px;height:20px;margin-top:1px;border:1px solid #a7bdba90;display:grid;place-items:center;color:#eae7d7;font:11px Arial,sans-serif}
+#xian-tu-embed .xt-option:has(input[type=radio]) .xt-choice-mark{border-radius:50%}
+#xian-tu-embed .xt-option input:checked+.xt-choice-mark{border-color:#e3dfbf;background:#b6cfc348}
+#xian-tu-embed .xt-option input:checked+.xt-choice-mark:after{content:"✓"}
+#xian-tu-embed .xt-choice-body{display:block;min-width:0}
+#xian-tu-embed .xt-choice-name{display:block;font-size:15px;font-weight:500;letter-spacing:.1em}
+#xian-tu-embed .xt-choice-desc{display:block;margin-top:8px;color:#b3c6c8;font-size:11px;line-height:1.7}
+#xian-tu-embed .xt-field{margin-bottom:33px}
+#xian-tu-embed .xt-field label{display:block;margin-bottom:12px;color:#e0e9e2;font-size:14px;letter-spacing:.2em}
+#xian-tu-embed .xt-field input{width:min(100%,500px);height:50px;padding:0 17px;border:1px solid #b9d2cf7a;border-radius:0;outline:none;background:#071626ab;color:#f5f7f1;font:16px "Noto Serif SC",serif}
+#xian-tu-embed .xt-field input:focus{border-color:#ebead2;box-shadow:0 0 0 2px #d6e4da1c}
+#xian-tu-embed .xt-note{margin:0;padding:19px 35px;border-top:1px solid #b8c8c62e;color:#acbec0;font-size:11px;line-height:1.8}
+#xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-sidebar .xt-tab-A{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-content .xt-panel-A{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-sidebar .xt-tab-B{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-content .xt-panel-B{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-sidebar .xt-tab-C{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-content .xt-panel-C{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-sidebar .xt-tab-D{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-content .xt-panel-D{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-sidebar .xt-tab-E{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-content .xt-panel-E{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-sidebar .xt-tab-F{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-content .xt-panel-F{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-sidebar .xt-tab-G{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-content .xt-panel-G{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-sidebar .xt-tab-H{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-content .xt-panel-H{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-sidebar .xt-tab-I{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-content .xt-panel-I{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-sidebar .xt-tab-J{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-content .xt-panel-J{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-sidebar .xt-tab-K{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-content .xt-panel-K{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-sidebar .xt-tab-L{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-content .xt-panel-L{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-sidebar .xt-tab-M{color:#f7f5e9;border-color:#b2cfc94d;background:linear-gradient(90deg,#84aab322,#84aab305)}
+#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-content .xt-panel-M{position:relative;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease .17s,visibility 0s}
+
+/* ===== 层级：背景 → 轮盘 → 角色 → 标题 → 按钮UI（.xt-wheel 不能设 z-index，否则子元素无法单独分层）===== */
+#xian-tu-embed .xt-scene{z-index:0}
+#xian-tu-embed .xt-orbit,#xian-tu-embed .xt-wheel-track{z-index:1}
+#xian-tu-embed .xt-mist{z-index:2}
+#xian-tu-embed .xt-character-frame{z-index:3}
+#xian-tu-embed .xt-title{z-index:4}
+#xian-tu-embed .xt-wheel-item{z-index:5}
+/* ===== 六个按钮：开屏左右划入（错峰），点击后向两侧滑出 ===== */
+#xian-tu-embed .xt-wheel-item{transition:transform .3s cubic-bezier(.55,0,.85,.2),opacity .26s ease}
+#xian-tu-embed .xt-wheel-build,#xian-tu-embed .xt-wheel-profile,#xian-tu-embed .xt-wheel-map{animation:xt-in-left .55s cubic-bezier(.22,1,.36,1) backwards}
+#xian-tu-embed .xt-wheel-factions,#xian-tu-embed .xt-wheel-paths,#xian-tu-embed .xt-wheel-relics{animation:xt-in-right .55s cubic-bezier(.22,1,.36,1) backwards}
+#xian-tu-embed .xt-wheel-build{animation-delay:.04s}
+#xian-tu-embed .xt-wheel-profile{animation-delay:.13s}
+#xian-tu-embed .xt-wheel-map{animation-delay:.22s}
+#xian-tu-embed .xt-wheel-factions{animation-delay:.09s}
+#xian-tu-embed .xt-wheel-paths{animation-delay:.18s}
+#xian-tu-embed .xt-wheel-relics{animation-delay:.27s}
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel-build,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel-profile,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel-map{transform:translateX(-118%);opacity:0}
+#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel-factions,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel-paths,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-wheel-relics{transform:translateX(118%);opacity:0}
+@keyframes xt-in-left{from{opacity:0;transform:translateX(-118%)}to{opacity:1;transform:translateX(0)}}
+@keyframes xt-in-right{from{opacity:0;transform:translateX(118%)}to{opacity:1;transform:translateX(0)}}
+/* ===== 轮盘光效：四颗光球 + 呼吸光晕 ===== */
+#xian-tu-embed .xt-wheel-track{animation:xt-wheel-glow 3.6s ease-in-out infinite}
+#xian-tu-embed .xt-orbit{animation:xt-orbit-glow 4.4s ease-in-out infinite}
+/* 光球独立成层：放在立绘之上（环线仍在立绘下方）。
+   注意：椭圆顶部切点(50% 0)在竖屏正好落在角色额头上，会像一块异常反光，所以这里不放球，只保留底/左/右三颗；
+   用两路错相位的呼吸做出"光沿环流动"的观感 */
+#xian-tu-embed .xt-sparks{position:absolute;left:13%;top:17%;width:76%;height:80%;pointer-events:none;z-index:4;background:radial-gradient(circle 9px at 50% 100%,#fff 0 46%,rgba(198,240,255,.55) 68%,transparent 100%),radial-gradient(circle 8px at 0 50%,#f2fdff 0 46%,rgba(198,240,255,.5) 68%,transparent 100%),radial-gradient(circle 8px at 100% 50%,#f2fdff 0 46%,rgba(198,240,255,.5) 68%,transparent 100%);animation:xt-dot-blink 2.6s ease-in-out infinite}
+#xian-tu-embed .xt-sparks:before{content:"";position:absolute;inset:0;background:radial-gradient(circle 15px at 50% 100%,rgba(214,246,255,.28),transparent 100%),radial-gradient(circle 14px at 0 50%,rgba(214,246,255,.26),transparent 100%),radial-gradient(circle 14px at 100% 50%,rgba(214,246,255,.26),transparent 100%);animation:xt-dot-blink 2.6s ease-in-out infinite;animation-delay:-1.3s}
+#xian-tu-embed .xt-medallion{animation:xt-medal 4.8s ease-in-out infinite}
+#xian-tu-embed .xt-wheel-factions .xt-medallion{animation-delay:-.8s}
+#xian-tu-embed .xt-wheel-profile .xt-medallion{animation-delay:-1.6s}
+#xian-tu-embed .xt-wheel-paths .xt-medallion{animation-delay:-2.4s}
+#xian-tu-embed .xt-wheel-map .xt-medallion{animation-delay:-3.2s}
+#xian-tu-embed .xt-wheel-relics .xt-medallion{animation-delay:-4s}
+@keyframes xt-idle{0%{transform:translate3d(0,0,0) rotate(-.4deg) scale(1)}50%{transform:translate3d(0,-.45%,0) rotate(.4deg) scale(1.004)}100%{transform:translate3d(0,0,0) rotate(-.4deg) scale(1)}}
+@keyframes xt-wheel-glow{0%,100%{border-color:rgba(214,240,248,.4);box-shadow:0 0 0 55px rgba(222,242,242,.018),0 0 16px rgba(140,210,235,.2)}50%{border-color:rgba(242,254,255,.95);box-shadow:0 0 0 55px rgba(222,242,242,.03),0 0 38px rgba(172,234,250,.55),0 0 72px rgba(120,205,235,.3)}}
+@keyframes xt-orbit-glow{0%,100%{border-color:rgba(212,238,244,.4);box-shadow:0 0 0 70px rgba(198,228,232,.02)}50%{border-color:rgba(238,252,255,.85);box-shadow:0 0 0 70px rgba(198,228,232,.035),0 0 44px rgba(150,220,240,.42)}}
+@keyframes xt-dot-blink{0%,100%{opacity:.5;filter:drop-shadow(0 0 5px rgba(150,220,235,.6))}50%{opacity:1;filter:drop-shadow(0 0 12px rgba(200,244,255,.95)) drop-shadow(0 0 26px rgba(120,205,235,.7))}}
+@keyframes xt-medal{0%,100%{box-shadow:0 0 0 5px rgba(226,237,228,.09),0 0 19px rgba(158,221,230,.21)}50%{box-shadow:0 0 0 6px rgba(226,237,228,.2),0 0 38px rgba(190,242,252,.6)}}
+
+@media(max-width:1120px){#xian-tu-embed .xt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#xian-tu-embed .xt-builder{grid-template-columns:218px minmax(0,1fr)}#xian-tu-embed .xt-content{padding-left:32px;padding-right:32px}}
+@media(max-width:760px){#xian-tu-embed .xt-scene{background-position:60% center}#xian-tu-embed .xt-character-frame{height:72svh;bottom:0}#xian-tu-embed .xt-title{font-size:clamp(58px,13.1vw,76px)}#xian-tu-embed .xt-title img{width:min(78vw,390px)}#xian-tu-embed .xt-wheel-track{left:-20%;top:39%;width:140%;height:57%;transform:none}#xian-tu-embed .xt-wheel-item{width:44%;min-height:51px;gap:7px;padding:4px 10px;border-radius:20px;background:linear-gradient(90deg,rgba(4,14,26,.82),rgba(4,14,26,.06))}#xian-tu-embed .xt-wheel-factions,#xian-tu-embed .xt-wheel-paths,#xian-tu-embed .xt-wheel-relics{background:linear-gradient(270deg,rgba(4,14,26,.82),rgba(4,14,26,.06))}#xian-tu-embed .xt-medallion{width:36px;height:36px;flex-basis:36px;font-size:18px}#xian-tu-embed .xt-wheel-copy small{display:none}#xian-tu-embed .xt-wheel-copy strong{font-size:12px;letter-spacing:.08em}#xian-tu-embed .xt-wheel-item:after{left:43px;right:14px}#xian-tu-embed .xt-wheel-factions:after,#xian-tu-embed .xt-wheel-paths:after,#xian-tu-embed .xt-wheel-relics:after{left:14px;right:43px}#xian-tu-embed .xt-wheel-build{left:3%;top:48%}#xian-tu-embed .xt-wheel-profile{left:1%;top:62%}#xian-tu-embed .xt-wheel-map{left:6%;top:76%}#xian-tu-embed .xt-wheel-factions{right:3%;top:47%}#xian-tu-embed .xt-wheel-paths{right:1%;top:61%}#xian-tu-embed .xt-wheel-relics{right:6%;top:75%}#xian-tu-embed .xt-sparks{left:-20%;top:39%;width:140%;height:57%}}
+@media(max-width:700px){#xian-tu-embed .xt-builder{display:none;flex-direction:column}#xian-tu-embed #xt-view-builder:checked ~ .xt-builder{display:flex}#xian-tu-embed .xt-sidebar{display:block;flex:0 0 auto;border-right:0;border-bottom:1px solid #d9e9e630}#xian-tu-embed .xt-brand{display:flex;align-items:center;justify-content:space-between;padding:12px 17px;border-bottom:0}#xian-tu-embed .xt-mark{margin:0;font-size:24px}#xian-tu-embed .xt-sidebar-title,#xian-tu-embed .xt-sidebar-foot{display:none}#xian-tu-embed .xt-tabs{display:flex;gap:3px;overflow:auto;padding:0 10px 10px;scrollbar-width:none}#xian-tu-embed .xt-tab{flex:0 0 auto;min-height:38px;padding:6px 12px;gap:6px}#xian-tu-embed .xt-tab-index{width:auto}#xian-tu-embed .xt-content{padding:25px 15px 70px}#xian-tu-embed .xt-heading{margin-bottom:22px}#xian-tu-embed .xt-heading h2{font-size:42px}#xian-tu-embed .xt-heading p{font-size:11px}#xian-tu-embed .xt-panel-head{padding:22px 18px 17px}#xian-tu-embed .xt-panel-head h3{font-size:22px}#xian-tu-embed .xt-options{padding:18px}#xian-tu-embed .xt-grid{grid-template-columns:1fr}#xian-tu-embed .xt-option{min-height:68px;padding:13px}#xian-tu-embed .xt-note{padding:16px 18px}}
+@media(max-width:560px) and (orientation:portrait){#xian-tu-embed .xt-scene{background-position:56% center}#xian-tu-embed .xt-title{top:19%;font-size:clamp(38px,11.6vw,56px)}#xian-tu-embed .xt-orbit{top:16%;width:118vw}#xian-tu-embed .xt-character-frame{height:74svh;bottom:-3%;translate:-54% 0}#xian-tu-embed .xt-wheel-track{left:-18%;top:44%;width:136%;height:50%;transform:none}#xian-tu-embed .xt-wheel-item{width:46%;min-height:54px;border-radius:20px;background:linear-gradient(90deg,rgba(4,14,26,.88) 0%,rgba(4,14,26,.54) 42%,rgba(4,14,26,.16) 74%,rgba(4,14,26,0) 100%)}#xian-tu-embed .xt-wheel-factions,#xian-tu-embed .xt-wheel-paths,#xian-tu-embed .xt-wheel-relics{background:linear-gradient(270deg,rgba(4,14,26,.88) 0%,rgba(4,14,26,.54) 42%,rgba(4,14,26,.16) 74%,rgba(4,14,26,0) 100%)}#xian-tu-embed .xt-wheel-build{left:3%;top:55%}#xian-tu-embed .xt-wheel-profile{left:3%;top:69%}#xian-tu-embed .xt-wheel-map{left:3%;top:83%}#xian-tu-embed .xt-wheel-factions{right:3%;top:55%}#xian-tu-embed .xt-wheel-paths{right:3%;top:69%}#xian-tu-embed .xt-wheel-relics{right:3%;top:83%}#xian-tu-embed .xt-sparks{left:-18%;top:44%;width:136%;height:50%}}
+/* ==================== 角色构建页 · v2 重制 ====================
+   改了什么：① 页头从 70px 压到 42px，纵向留白收紧；② 面板做成卡片（四角描金 + 内高光 + 圆角）；
+   ③ 侧栏改成"编号目录"（圆形编号 + 竖向连接线 + 选中描金），并修掉原生滚动条与底部文字被挤出的问题；
+   ④ 选项从"空框"改成有选中态（描金边 + 内发光 + 金色菱形印记）、悬停微抬升；
+   ⑤ 表单/备注/分组标题全部补齐层次。旧样式仍保留在文件前半段，本块置于末尾以确保覆盖。 */
+#xian-tu-embed .xt-builder{grid-template-columns:236px minmax(0,1fr);background:transparent}
+#xian-tu-embed .xt-builder:before{display:none}
+#xian-tu-embed .xt-sidebar{border-right:1px solid #cfd9d21c;background:transparent;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:none}
+#xian-tu-embed .xt-brand{padding:20px 20px 16px;border-bottom:1px solid #cbd7d01a}
+#xian-tu-embed .xt-back{display:inline-flex;align-items:center;padding:6px 13px;border:1px solid #b9cfc93a;border-radius:999px;background:#9fc0bd12;color:#b3c9cb;font-size:12px;letter-spacing:.1em;transition:.22s}
+#xian-tu-embed .xt-back:hover{color:#f5f9f3;border-color:#d9e6d76b;background:#a9c8c42e;transform:translateX(-2px)}
+#xian-tu-embed .xt-mark{margin:14px 0 0;font:31px/1.2 "Zhi Mang Xing","Ma Shan Zheng",cursive;color:#f2f1e8;text-shadow:0 2px 16px #000c,0 0 26px #7fd2e63d}
+#xian-tu-embed .xt-sidebar-title{padding:16px 20px 8px;color:#d9d5c0;font-size:14px;letter-spacing:.3em}
+#xian-tu-embed .xt-sidebar-title small{font:9px/1 Arial,sans-serif;letter-spacing:.18em;color:#7e9aa6}
+#xian-tu-embed .xt-tabs{flex:1 1 auto;min-height:0;padding:8px 12px 16px;scrollbar-width:thin;scrollbar-color:#8fb6bd40 transparent}
+#xian-tu-embed .xt-tabs::-webkit-scrollbar{width:4px}
+#xian-tu-embed .xt-tabs::-webkit-scrollbar-track{background:transparent}
+#xian-tu-embed .xt-tabs::-webkit-scrollbar-thumb{background:#8fb6bd3d;border-radius:99px}
+#xian-tu-embed .xt-tab{position:relative;display:flex;align-items:center;min-height:40px;margin-bottom:1px;padding:6px 12px 6px 40px;border:0;border-radius:9px;color:#9ab0b8;font-size:13px;letter-spacing:.13em;transition:background .2s,color .2s}
+#xian-tu-embed .xt-tab-index{position:absolute;left:11px;top:50%;width:19px;height:19px;margin-top:-9.5px;display:grid;place-items:center;border:1px solid #9fbcc061;border-radius:50%;background:#07131e;color:#a4c0c4;font:9px/1 Arial,sans-serif;transition:.22s}
+#xian-tu-embed .xt-tab:not(:last-child):after{content:"";position:absolute;left:20px;top:calc(50% + 12px);width:1px;height:15px;background:linear-gradient(#9fbcc038,#9fbcc008)}
+#xian-tu-embed .xt-tab:hover{color:#e7f0ec;background:#a5c2c016}
+#xian-tu-embed .xt-tab:hover .xt-tab-index{border-color:#cfe0d59e;color:#eef4ea}
+#xian-tu-embed .xt-sidebar-foot{padding:14px 20px;border-top:1px solid #c5d5d21c;color:#9db0b3;font-size:11px;letter-spacing:.14em}
+#xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-sidebar .xt-tab-A,#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-sidebar .xt-tab-B,#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-sidebar .xt-tab-C,#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-sidebar .xt-tab-D,#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-sidebar .xt-tab-E,#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-sidebar .xt-tab-F,#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-sidebar .xt-tab-G,#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-sidebar .xt-tab-H,#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-sidebar .xt-tab-I,#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-sidebar .xt-tab-J,#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-sidebar .xt-tab-K,#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-sidebar .xt-tab-L,#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-sidebar .xt-tab-M{color:#f8f6ea;background:linear-gradient(90deg,#cdeaff1c,#cdeaff00 72%);box-shadow:inset 0 0 0 1px #d5c49f33}
+#xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-sidebar .xt-tab-A .xt-tab-index,#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-sidebar .xt-tab-B .xt-tab-index,#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-sidebar .xt-tab-C .xt-tab-index,#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-sidebar .xt-tab-D .xt-tab-index,#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-sidebar .xt-tab-E .xt-tab-index,#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-sidebar .xt-tab-F .xt-tab-index,#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-sidebar .xt-tab-G .xt-tab-index,#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-sidebar .xt-tab-H .xt-tab-index,#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-sidebar .xt-tab-I .xt-tab-index,#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-sidebar .xt-tab-J .xt-tab-index,#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-sidebar .xt-tab-K .xt-tab-index,#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-sidebar .xt-tab-L .xt-tab-index,#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-sidebar .xt-tab-M .xt-tab-index{border-color:#e4dcbd;background:linear-gradient(135deg,#f2e9c8,#cbb87e);color:#0a141d;box-shadow:0 0 12px #d5c49f66}
+#xian-tu-embed .xt-content{padding:clamp(20px,3.2vh,34px) clamp(18px,3.6vw,58px) 44px;scrollbar-width:thin;scrollbar-color:#8fb6bd3d transparent}
+#xian-tu-embed .xt-content::-webkit-scrollbar{width:6px}
+#xian-tu-embed .xt-content::-webkit-scrollbar-track{background:transparent}
+#xian-tu-embed .xt-content::-webkit-scrollbar-thumb{background:#8fb6bd33;border-radius:99px}
+#xian-tu-embed .xt-heading{max-width:1120px;margin:0 auto 18px}
+#xian-tu-embed .xt-eyebrow{display:inline-flex;align-items:center;gap:11px;color:#a9c0c6;font:11px/1 Arial,"Microsoft YaHei",sans-serif;letter-spacing:.26em}
+#xian-tu-embed .xt-eyebrow:after{content:"";width:54px;height:1px;background:linear-gradient(90deg,#d5c49f99,transparent)}
+#xian-tu-embed .xt-heading h2{margin:9px 0 4px;font:normal clamp(30px,2.7vw,42px)/1.12 "Zhi Mang Xing","Ma Shan Zheng","STKaiti",serif;letter-spacing:.1em;color:#f6f5ec;text-shadow:0 3px 22px #000a}
+#xian-tu-embed .xt-heading p{margin:0;color:#a8bfc3;font-size:12px;letter-spacing:.16em}
+#xian-tu-embed .xt-panel{position:relative;max-width:1120px;border:1px solid #c3d5cf2b;border-radius:14px;background:transparent;box-shadow:0 26px 60px #01070e80;backdrop-filter:blur(16px);overflow:hidden}
+#xian-tu-embed .xt-panel:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#d5c49f7a,#d5c49f7a) left top/15px 1px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) left top/1px 15px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) right top/15px 1px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) right top/1px 15px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) left bottom/15px 1px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) left bottom/1px 15px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) right bottom/15px 1px no-repeat,linear-gradient(#d5c49f7a,#d5c49f7a) right bottom/1px 15px no-repeat}
+#xian-tu-embed .xt-panel-head{align-items:center;padding:16px 24px 14px;border-bottom:1px solid #c3d5cf1c;background:transparent}
+#xian-tu-embed .xt-code{display:inline-block;padding:2px 9px;border:1px solid #d5c49f4d;border-radius:999px;background:#d5c49f12;color:#d9cba9;font:10px/1.7 Arial,sans-serif;letter-spacing:.2em}
+#xian-tu-embed .xt-panel-head h3{margin:9px 0 0;font-size:21px;font-weight:500;letter-spacing:.16em;color:#f3f4ea}
+#xian-tu-embed .xt-panel-head p{margin:6px 0 0;color:#a4bbc0;font-size:12px;letter-spacing:.06em}
+#xian-tu-embed .xt-count{color:#9db6bb;font:11px/1 Arial,sans-serif;letter-spacing:.14em;white-space:nowrap}
+#xian-tu-embed .xt-options{padding:18px 24px 24px}
+#xian-tu-embed .xt-group{margin:0 0 20px}
+#xian-tu-embed .xt-group h4{display:flex;align-items:center;gap:10px;margin:0 0 11px;color:#dfe6dc;font-size:13px;font-weight:500;letter-spacing:.2em}
+#xian-tu-embed .xt-group h4:before{content:"";width:5px;height:5px;transform:rotate(45deg);background:linear-gradient(135deg,#f2e9c8,#cbb87e);box-shadow:0 0 8px #d5c49f8c}
+#xian-tu-embed .xt-group h4:after{content:"";flex:1 1 auto;height:1px;background:linear-gradient(90deg,#c3d5cf30,transparent)}
+#xian-tu-embed .xt-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px}
+#xian-tu-embed .xt-option{min-height:0;padding:11px 13px;border:1px solid #b9cfca29;border-radius:10px;background:transparent;gap:11px;align-items:center;transition:transform .2s,border-color .2s,background .2s,box-shadow .2s}
+#xian-tu-embed .xt-option:hover{transform:translateY(-1px);border-color:#cfe0d766;background:#ffffff12;box-shadow:0 9px 24px #020a1238}
+#xian-tu-embed .xt-option:has(input:checked){border-color:#d5c49f8c;background:linear-gradient(150deg,#d5c49f22,#b8e2e90f);box-shadow:0 0 0 1px #d5c49f2e,0 10px 26px #020a1240,inset 0 0 26px #d5c49f12}
+#xian-tu-embed .xt-choice-mark{flex:0 0 16px;width:16px;height:16px;margin:0;border:1px solid #a7bdba7a;background:#07131f;transition:.2s}
+#xian-tu-embed .xt-option input:checked+.xt-choice-mark{border-color:#ece2c0;background:#f2ead0;box-shadow:0 0 10px #d5c49f73}
+#xian-tu-embed .xt-option input:checked+.xt-choice-mark:after{content:"";width:6px;height:6px;transform:rotate(45deg);background:#13242f}
+#xian-tu-embed .xt-choice-name{font-size:14px;font-weight:500;letter-spacing:.08em}
+#xian-tu-embed .xt-choice-desc{margin-top:5px;color:inherit;font-size:11px;line-height:1.62}
+#xian-tu-embed .xt-field{margin-bottom:22px}
+#xian-tu-embed .xt-field label{margin-bottom:9px;color:#dde4da;font-size:13px;letter-spacing:.18em}
+#xian-tu-embed .xt-field input{width:min(100%,420px);height:46px;padding:0 15px;border:1px solid #b9d2cf5c;border-radius:9px;background:#061423b8;font:15px/1 "Noto Serif SC",serif;transition:.22s}
+#xian-tu-embed .xt-field input:focus{border-color:#d5c49f9e;box-shadow:0 0 0 3px #d5c49f1f,0 9px 26px #020a1240}
+#xian-tu-embed .xt-note{padding:13px 24px;border-top:1px solid #c3d5cf1a;background:transparent;color:#b7c8cb;font-size:11px;line-height:1.75;text-shadow:0 1px 6px #02060ccc}
+@media(max-width:1120px){#xian-tu-embed .xt-builder{grid-template-columns:212px minmax(0,1fr)}#xian-tu-embed .xt-grid{grid-template-columns:repeat(auto-fill,minmax(188px,230px))}}
+@media(max-width:700px){#xian-tu-embed .xt-builder{background:transparent}#xian-tu-embed .xt-sidebar{border-right:0;border-bottom:1px solid #cfd9d21f;background:linear-gradient(180deg,#050e18f7,#071422f2)}#xian-tu-embed .xt-brand{align-items:center;padding:12px 15px 10px}#xian-tu-embed .xt-mark{margin:0;font-size:23px}#xian-tu-embed .xt-tabs{flex:0 0 auto;display:flex;gap:7px;padding:2px 15px 12px;overflow-x:auto;scrollbar-width:none}#xian-tu-embed .xt-tabs::-webkit-scrollbar{display:none}#xian-tu-embed .xt-tab{flex:0 0 auto;min-height:34px;margin:0;padding:6px 13px 6px 33px;border:1px solid #b9cfc92e;border-radius:999px;background:#08141f8c;font-size:12px}#xian-tu-embed .xt-tab-index{left:9px;width:17px;height:17px;margin-top:-8.5px}#xian-tu-embed .xt-tab:after{display:none!important}#xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-sidebar .xt-tab-A,#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-sidebar .xt-tab-B,#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-sidebar .xt-tab-C,#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-sidebar .xt-tab-D,#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-sidebar .xt-tab-E,#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-sidebar .xt-tab-F,#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-sidebar .xt-tab-G,#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-sidebar .xt-tab-H,#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-sidebar .xt-tab-I,#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-sidebar .xt-tab-J,#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-sidebar .xt-tab-K,#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-sidebar .xt-tab-L,#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-sidebar .xt-tab-M{border-color:#d5c49f80;background:linear-gradient(135deg,#f2e9c826,#cbb87e14)}#xian-tu-embed .xt-content{padding:16px 14px 40px}#xian-tu-embed .xt-heading{margin-bottom:14px}#xian-tu-embed .xt-heading h2{font-size:29px}#xian-tu-embed .xt-heading p{font-size:11px}#xian-tu-embed .xt-panel-head{padding:13px 16px 11px}#xian-tu-embed .xt-panel-head h3{margin-top:7px;font-size:18px}#xian-tu-embed .xt-options{padding:14px 16px 18px}#xian-tu-embed .xt-grid{grid-template-columns:1fr;gap:8px}#xian-tu-embed .xt-option{padding:10px 12px}#xian-tu-embed .xt-field input{width:100%}#xian-tu-embed .xt-note{padding:11px 16px}}
+/* —— 进入构建页：A~M 主导航依次自左滑入，页头随后淡入；分类面板使用透明度切换 —— */
+@keyframes xt-nav-in{from{opacity:0;translate:-26px 0}to{opacity:1;translate:0 0}}
+@keyframes xt-fade-up{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+#xian-tu-embed .xt-tab{animation:xt-nav-in .44s cubic-bezier(.22,1,.36,1) backwards}
+#xian-tu-embed .xt-tab-A{animation-delay:.03s}
+#xian-tu-embed .xt-tab-B{animation-delay:.07s}
+#xian-tu-embed .xt-tab-C{animation-delay:.11s}
+#xian-tu-embed .xt-tab-D{animation-delay:.15s}
+#xian-tu-embed .xt-tab-E{animation-delay:.19s}
+#xian-tu-embed .xt-tab-F{animation-delay:.23s}
+#xian-tu-embed .xt-tab-G{animation-delay:.27s}
+#xian-tu-embed .xt-tab-H{animation-delay:.31s}
+#xian-tu-embed .xt-tab-I{animation-delay:.35s}
+#xian-tu-embed .xt-tab-J{animation-delay:.39s}
+#xian-tu-embed .xt-tab-K{animation-delay:.43s}
+#xian-tu-embed .xt-tab-L{animation-delay:.47s}
+#xian-tu-embed .xt-tab-M{animation-delay:.51s}
+#xian-tu-embed .xt-heading{animation:xt-fade-up .5s cubic-bezier(.22,1,.36,1) backwards}
+#xian-tu-embed .xt-heading{animation-delay:.12s}
+
+/* 只让当前分类参与布局；旧面板先淡出，新面板在淡出末段开始淡入。 */
+#xian-tu-embed .xt-panels{position:relative;max-width:1120px;margin:auto;overflow:clip;overflow-clip-margin:75px}
+#xian-tu-embed .xt-panel{display:block;position:absolute;inset:0 auto auto 0;width:100%;margin:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility 0s linear .22s}
+/* 覆盖层模式下，移动端 tab 药丸也去掉底色 */
+@media(max-width:700px){#xian-tu-embed .xt-tab{background:transparent}}
+/* v00.ai 的承载卡片本身带 backdrop-blur-sm；它包住整个片段，子元素动画会让
+   手机浏览器持续重新合成整张卡片。只关闭包含本片段的卡片模糊。 */
+@media (hover:none),(pointer:coarse),(max-width:760px){
+  .backdrop-blur-sm:has(#xian-tu-embed){-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  #xian-tu-embed{min-height:0}
+  /* 这里原来是对所有后代元素一刀切关掉动画的写法，副作用是"两组立绘+背景的周期切换"、
+     待机摆动、轮盘发光全部失效（手机必命中 pointer:coarse，所以移动端完全不切换）。
+     改成只关移动端真正高开销的几类，其余（纯 opacity / transform，可走合成）保留：
+       关：A~M 导航划入与面板淡入（一次性，宿主重渲染时会重放 → 看起来就是闪）、
+           6 个牌子的 box-shadow 呼吸、轮盘与装饰圆的 box-shadow 呼吸、装饰圆 80s 旋转、
+           光球的 drop-shadow 呼吸（换成只呼吸透明度）
+       留：立绘/背景交叉淡化、立绘待机摆动 */
+  #xian-tu-embed .xt-tab,#xian-tu-embed .xt-heading,#xian-tu-embed .xt-panel,
+  #xian-tu-embed .xt-medallion,#xian-tu-embed .xt-wheel-track,#xian-tu-embed .xt-orbit,
+  #xian-tu-embed .xt-orbit:before{animation:none!important}
+  /* ① 光球呼吸在移动端彻底停掉：它是唯一"连续每帧"的动画，却要混合一个约 7.7MB 的整层。
+      静态光点仍在（下面的 .xt-sparks opacity .75 / :before .35 保留），只是不再呼吸。 */
+  #xian-tu-embed .xt-sparks,#xian-tu-embed .xt-sparks:before{animation:none!important}
+  #xian-tu-embed .xt-sidebar,#xian-tu-embed .xt-panel{-webkit-backdrop-filter:none;backdrop-filter:none}
+  #xian-tu-embed .xt-panel{background:#0b1b2ce8}
+  #xian-tu-embed .xt-character{filter:none;will-change:auto}
+  #xian-tu-embed .xt-character-frame,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{filter:none}
+  #xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-character-frame{opacity:.58}
+  #xian-tu-embed .xt-scene,#xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-scene{filter:none}
+  #xian-tu-embed .xt-scene:after{background:linear-gradient(90deg,rgba(3,10,22,.87),rgba(3,10,22,.58) 26%,rgba(3,10,22,.24) 59%,rgba(3,10,22,.52)),linear-gradient(0deg,rgba(3,10,22,.78),transparent 42%)}
+  #xian-tu-embed #xt-view-builder:checked ~ .xt-home .xt-scene:after{background:rgba(3,10,22,.7)}
+  #xian-tu-embed .xt-mist{filter:none}
+  #xian-tu-embed .xt-sparks{opacity:.75}
+  #xian-tu-embed .xt-sparks:before{opacity:.35}
+}
+/* ==================== 立绘 + 背景 成对周期切换（纯 HTML + CSS，无 JS） ====================
+   第 1 组：蓝发剑修 + 云海夜空背景
+   第 2 组：黑衣执扇 + 水墨白龙背景
+   两组共用同一条 10s 时间轴 → 立绘和背景必然同步切换（每组显示 5s，切换处 0.6s 交叉淡入淡出）。
+   ① 两层 opacity 走互为镜像的关键帧：0~44% 与 50~94% 是各自稳定期，44~50% 与 94~100% 是交叉淡化段。
+   ② 立绘身上本来就有待机摆动动画，所以这两条必须把动画写全（animation 简写会把摆动覆盖掉）。
+   ③ 减动效(reduced-motion)时动画被整体停掉，靠基础 opacity 兜底 → 固定显示第 1 组，不会闪。
+   ④ .xt-scene:after 那层压暗渐变是背景层的子元素，会跟着一起淡入淡出；两层用的是同一组渐变，
+      所以交叉淡化期间画面整体明暗基本不变。
+   加第 3 组：再加一张 .xt-hero-3 和一个 .xt-scene-c，并把时间轴改成三等分（0~30% / 33~63% / 66~96%）。 */
+@keyframes xt-swap-a{0%,44%{opacity:1}50%,94%{opacity:0}100%{opacity:1}}
+@keyframes xt-swap-b{0%,44%{opacity:0}50%,94%{opacity:1}100%{opacity:0}}
+#xian-tu-embed .xt-scene{animation:xt-swap-a 10s linear infinite}
+#xian-tu-embed .xt-scene-b{opacity:0;background-image:url("https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-background-2.png");animation:xt-swap-b 10s linear infinite}
+#xian-tu-embed .xt-hero{position:absolute;left:50%;bottom:0;height:100%;width:auto;max-width:none;translate:-50% 0}
+#xian-tu-embed .xt-hero-1{animation:xt-idle 7.5s ease-in-out infinite,xt-swap-a 10s linear infinite}
+#xian-tu-embed .xt-hero-2{opacity:0;animation:xt-idle 7.5s ease-in-out infinite,xt-swap-b 10s linear infinite}
+/* 图层提升（will-change）已撤回：实测主线程帧率毫无收益，却把 4 个大图层钉成常驻合成层，
+   增加 GPU 显存与带宽占用。隐藏相也回到 opacity:0，不再强制绘制。
+   移动端另有 will-change:auto 覆盖（本来就不启用提升）。 */
+/* 移动端：交叉淡化要求两层大图同时在场，解码+合成常跟不上 → 改成瞬时硬切，
+   切换时只需渲染"要显示的那一层"。
+   ⚠ 实测反馈修正：移动端**不要**做图层提升，也不要让隐藏相保持"可见"。
+     手机上 4 个大图层 ≈ 55MB 纹理，超出显存预算 → 纹理被丢弃 → 切回来照样重新栅格化；
+     隐藏相再占一份只会更快触发。所以移动端：取消提升 + 隐藏相回到 opacity:0 + 硬切。 */
+@media (hover:none),(pointer:coarse),(max-width:760px){
+  #xian-tu-embed .xt-scene,#xian-tu-embed .xt-scene-b,
+  #xian-tu-embed .xt-hero-1,#xian-tu-embed .xt-hero-2{will-change:auto;backface-visibility:visible}
+  #xian-tu-embed .xt-scene-b,#xian-tu-embed .xt-hero-2{opacity:0}
+  /* 移动端轮切目前是关闭状态（见下方 display:none / animation:none 那几条规则）→ 固定显示第 1 组。
+     要恢复轮切：把那些关掉的规则解开，四个层写回 16s 的切换（16s 周期 = 每组 8s）。 */
+
+
+  /* 备注：恢复轮切时若想减峰值，可让立绘比背景早 1s（animation-delay:-1s），
+     这样同一帧只栅格化一个层。 */
+
+
+}
+@media(prefers-reduced-motion:reduce){#xian-tu-embed *,#xian-tu-embed *:before,#xian-tu-embed *:after{animation:none!important;transition-duration:.01ms!important}}
+/* 减动效下仍然保留"两组立绘+背景"的切换，但去掉淡入淡出的过渡运动，改成瞬时硬切
+   （关键帧只留 49.9%→50% 这 0.01s 的过渡，肉眼就是一瞬间替换）。
+   必须同上 !important，并放在上一条之后——同为 !important 时后来者胜。 */
+@keyframes xt-swap-a-step{0%,49.9%{opacity:1}50%,100%{opacity:0}}
+@keyframes xt-swap-b-step{0%,49.9%{opacity:0}50%,100%{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+  #xian-tu-embed .xt-scene{animation:xt-swap-a-step 10s linear infinite!important}
+  #xian-tu-embed .xt-scene-b{animation:xt-swap-b-step 10s linear infinite!important}
+  #xian-tu-embed .xt-hero-1{animation:xt-swap-a-step 10s linear infinite!important}
+  #xian-tu-embed .xt-hero-2{animation:xt-swap-b-step 10s linear infinite!important}
+}
+/* 移动端 + 减弱动效：同样保持"固定第 1 组"，避免上面那条 !important 把切换重新打开。 */
+@media (max-width:760px) and (prefers-reduced-motion:reduce),
+       (hover:none) and (prefers-reduced-motion:reduce),
+       (pointer:coarse) and (prefers-reduced-motion:reduce){
+  /* 移动端 + 减弱动效：上一条 !important 会重新打开切换，这里同样 !important 关掉，保持"固定第 1 组"。 */
+  #xian-tu-embed .xt-scene,#xian-tu-embed .xt-scene-b,
+  #xian-tu-embed .xt-hero-1,#xian-tu-embed .xt-hero-2{animation:none!important}
+}
+
+/* Mobile reliability: CDN-hosted compressed artwork; final rules restore swapping. */
+#xian-tu-embed .xt-state{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;clip-path:inset(50%)}
+#xian-tu-embed #xt-view-builder:focus-visible ~ .xt-home .xt-wheel-build,
+#xian-tu-embed #xt-view-home:focus-visible ~ .xt-builder .xt-back{outline:2px solid var(--xt-cyan);outline-offset:2px}
+#xian-tu-embed #xt-tab-A:focus-visible ~ .xt-builder .xt-tab-A,#xian-tu-embed #xt-tab-B:focus-visible ~ .xt-builder .xt-tab-B,#xian-tu-embed #xt-tab-C:focus-visible ~ .xt-builder .xt-tab-C,#xian-tu-embed #xt-tab-D:focus-visible ~ .xt-builder .xt-tab-D,#xian-tu-embed #xt-tab-E:focus-visible ~ .xt-builder .xt-tab-E,#xian-tu-embed #xt-tab-F:focus-visible ~ .xt-builder .xt-tab-F,#xian-tu-embed #xt-tab-G:focus-visible ~ .xt-builder .xt-tab-G,#xian-tu-embed #xt-tab-H:focus-visible ~ .xt-builder .xt-tab-H,#xian-tu-embed #xt-tab-I:focus-visible ~ .xt-builder .xt-tab-I,#xian-tu-embed #xt-tab-J:focus-visible ~ .xt-builder .xt-tab-J,#xian-tu-embed #xt-tab-K:focus-visible ~ .xt-builder .xt-tab-K,#xian-tu-embed #xt-tab-L:focus-visible ~ .xt-builder .xt-tab-L,#xian-tu-embed #xt-tab-M:focus-visible ~ .xt-builder .xt-tab-M{outline:2px solid var(--xt-cyan);outline-offset:2px}
+@media (max-width: 760px), (hover: none), (pointer: coarse){
+  #xian-tu-embed .xt-scene{background-image:url("https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@1b26456941afca18ac741b72f0b455aa58819765/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-background-mobile.webp")!important;background-position:center!important;animation:none!important;transition:none!important}
+  #xian-tu-embed .xt-scene-b,#xian-tu-embed .xt-hero-2{animation:none!important}
+  #xian-tu-embed .xt-hero-1,#xian-tu-embed .xt-character{animation:none!important;transition:none!important}
+  #xian-tu-embed .xt-character-frame{transition:translate .2s ease,opacity .2s ease!important}
+  #xian-tu-embed .xt-mist{display:none!important}
+  #xian-tu-embed .xt-wheel-item{animation:none!important}
+  #xian-tu-embed .xt-panel{display:none!important;position:relative!important;inset:auto!important;visibility:visible!important;opacity:1!important;transition:none!important;pointer-events:auto!important}
+  #xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-panel-A,#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-panel-B,#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-panel-C,#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-panel-D,#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-panel-E,#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-panel-F,#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-panel-G,#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-panel-H,#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-panel-I,#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-panel-J,#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-panel-K,#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-panel-L,#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-panel-M{display:block!important}
+}
+
+/* Mobile art cycle: both pairs use small CDN-hosted WebP images, fetched once
+   and reused during the loop instead of decoding the original large PNG files. */
+@keyframes xt-mobile-a{0%,47%{opacity:1}50%,97%{opacity:0}100%{opacity:1}}
+@keyframes xt-mobile-b{0%,47%{opacity:0}50%,97%{opacity:1}100%{opacity:0}}
+@media (max-width: 760px), (hover: none), (pointer: coarse){
+  #xian-tu-embed .xt-scene-b{display:block!important;background-image:url("https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@1b26456941afca18ac741b72f0b455aa58819765/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-background-2-mobile.webp")!important;background-position:center!important}
+  #xian-tu-embed .xt-hero-2{display:block!important}
+  #xian-tu-embed .xt-scene:not(.xt-scene-b),#xian-tu-embed .xt-hero-1{animation:xt-mobile-a 16s linear infinite!important}
+  #xian-tu-embed .xt-scene-b,#xian-tu-embed .xt-hero-2{animation:xt-mobile-b 16s linear infinite!important}
+}
+@media (max-width:760px) and (prefers-reduced-motion:reduce),
+       (hover:none) and (prefers-reduced-motion:reduce),
+       (pointer:coarse) and (prefers-reduced-motion:reduce){
+  #xian-tu-embed .xt-scene:not(.xt-scene-b),#xian-tu-embed .xt-hero-1{animation:xt-swap-a-step 16s linear infinite!important}
+  #xian-tu-embed .xt-scene-b,#xian-tu-embed .xt-hero-2{animation:xt-swap-b-step 16s linear infinite!important}
+}
+/* ══════ 移动端轮切：已开启（16s 周期 = 每组 8s；立绘与背景同步瞬时切换）══════
+   为什么放在最末：上面有若干"关闭轮切"的规则（display:none / animation:none!important），
+   这里用同样的 !important 放在它们之后 → 依据"同权重后来者胜"接管轮切，不需要去改那些规则。
+   注意：本段只放开"轮切"本身；上面 .xt-character 的 animation:none!important 仍然生效，
+   所以移动端的"待机摆动"依旧关着（这是之前确认要关的）。
+   要再次关闭：删掉这一整段，并把上面 .xt-scene-b/.xt-hero-2 那条加回 display:none!important。 */
+@media (max-width: 760px), (hover: none), (pointer: coarse){
+  #xian-tu-embed .xt-scene{animation:xt-swap-a-step 16s linear infinite!important}
+  #xian-tu-embed .xt-scene-b{animation:xt-swap-b-step 16s linear infinite!important}
+  #xian-tu-embed .xt-hero-1{animation:xt-swap-a-step 16s linear infinite!important}
+  #xian-tu-embed .xt-hero-2{animation:xt-swap-b-step 16s linear infinite!important}
+}
+/* ══════ 移动端：加回角色待机晃动 ══════
+   之前为排查移动端卡顿，把 .xt-character 的 animation 整个关掉了（上面那条 animation:none!important），
+   导致移动端没有晃动。这里在样式最末用同权重 + !important 接管"动画列表"，只恢复晃动、不动任何其它属性：
+     · 立绘 = xt-idle（晃动，7.5s）+ 轮切（沿用你在上面定义的 xt-mobile-a/xt-mobile-b，16s = 每组 8s）
+     · 背景 = 只保留轮切（背景本来就不该晃）
+   放在最末的原因：同权重时后来者胜，不需要去改上面那些关闭规则（想再关掉只需删掉本段）。 */
+@media (max-width: 760px), (hover: none), (pointer: coarse){
+  #xian-tu-embed .xt-scene:not(.xt-scene-b),#xian-tu-embed .xt-scene{animation:xt-mobile-a 16s linear infinite!important}
+  #xian-tu-embed .xt-scene-b{animation:xt-mobile-b 16s linear infinite!important}
+  #xian-tu-embed .xt-hero-1{animation:xt-idle 7.5s ease-in-out infinite,xt-mobile-a 16s linear infinite!important}
+  #xian-tu-embed .xt-hero-2{animation:xt-idle 7.5s ease-in-out infinite,xt-mobile-b 16s linear infinite!important}
+}
+@media (max-width:760px) and (prefers-reduced-motion:reduce),
+       (hover:none) and (prefers-reduced-motion:reduce),
+       (pointer:coarse) and (prefers-reduced-motion:reduce){
+  #xian-tu-embed .xt-scene:not(.xt-scene-b),#xian-tu-embed .xt-hero-1{animation:xt-swap-a-step 16s linear infinite!important}
+  #xian-tu-embed .xt-scene-b,#xian-tu-embed .xt-hero-2{animation:xt-swap-b-step 16s linear infinite!important}
+}
+</style>
+<input class="xt-state" type="radio" name="xt-view" id="xt-view-home" checked>
+<input class="xt-state" type="radio" name="xt-view" id="xt-view-builder">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-A" checked>
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-B">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-C">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-D">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-E">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-F">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-G">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-H">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-I">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-J">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-K">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-L">
+<input class="xt-state" type="radio" name="xt-tab" id="xt-tab-M">
+<div class="xt-home" aria-label="仙途缥缈录主页">
+<div class="xt-scene" aria-hidden="true"></div><div class="xt-scene xt-scene-b" aria-hidden="true"></div><div class="xt-orbit" aria-hidden="true"></div>
+<div class="xt-character-frame"><picture><source media="(max-width: 760px), (hover: none), (pointer: coarse)" type="image/webp" srcset="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@1b26456941afca18ac741b72f0b455aa58819765/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-character-mobile.webp"><img class="xt-character xt-hero xt-hero-1" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-character.png" alt="蓝发剑修立于云海" width="1379" height="1141" decoding="async" fetchpriority="high"></picture><picture><source media="(max-width: 760px), (hover: none), (pointer: coarse)" type="image/webp" srcset="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@1b26456941afca18ac741b72f0b455aa58819765/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-character-2-mobile.webp"><img class="xt-character xt-hero xt-hero-2" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-character-2.png" alt="执扇黑衣女子" width="1164" height="1351" decoding="async" fetchpriority="low"></picture></div>
+<div class="xt-mist" aria-hidden="true"></div><h1 class="xt-title"><picture><source media="(max-width: 760px), (hover: none), (pointer: coarse)" type="image/webp" srcset="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@1b26456941afca18ac741b72f0b455aa58819765/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-title-mobile.webp"><img src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/%E4%BB%99%E9%80%94%E7%BC%A5%E7%BC%88%E5%BD%95-%E9%80%8F%E6%98%8E%E6%A0%87%E9%A2%98.png" alt="仙途缥缈录" width="1399" height="393" decoding="async" fetchpriority="high"></picture></h1><div class="xt-sparks" aria-hidden="true"></div>
+<div class="xt-wheel"><div class="xt-wheel-track" aria-hidden="true"></div>
+<label class="xt-wheel-item xt-wheel-build" for="xt-view-builder"><span class="xt-medallion">命</span><span class="xt-wheel-copy"><small>ORIGIN / 01</small><strong>角色构建</strong></span></label>
+<div class="xt-wheel-item xt-wheel-profile xt-wheel-disabled"><span class="xt-medallion">人</span><span class="xt-wheel-copy"><small>PERSONAE / 02</small><strong>角色档案</strong></span></div>
+<div class="xt-wheel-item xt-wheel-map xt-wheel-disabled"><span class="xt-medallion">州</span><span class="xt-wheel-copy"><small>NINE REALMS / 03</small><strong>九州地图</strong></span></div>
+<div class="xt-wheel-item xt-wheel-factions xt-wheel-disabled"><span class="xt-medallion">宗</span><span class="xt-wheel-copy"><small>FACTIONS / 04</small><strong>势力介绍</strong></span></div>
+<div class="xt-wheel-item xt-wheel-paths xt-wheel-disabled"><span class="xt-medallion">道</span><span class="xt-wheel-copy"><small>THE WAY / 05</small><strong>道途</strong></span></div>
+<div class="xt-wheel-item xt-wheel-relics xt-wheel-disabled"><span class="xt-medallion">器</span><span class="xt-wheel-copy"><small>RELICS / 06</small><strong>遗世神兵</strong></span></div>
+</div></div>
+<div class="xt-builder" aria-label="角色构建">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<aside class="xt-sidebar"><div class="xt-brand"><label class="xt-back" for="xt-view-home">← 返回仙途</label><div class="xt-mark">仙途缥缈录</div></div>
+<div class="xt-sidebar-title"><span>命 卷</span><small>CHARACTER ORIGIN</small></div>
+<nav class="xt-tabs" aria-label="构建步骤">
+<label class="xt-tab xt-tab-A" for="xt-tab-A"><span class="xt-tab-index">A</span><span>基础信息</span></label>
+<label class="xt-tab xt-tab-B" for="xt-tab-B"><span class="xt-tab-index">B</span><span>种族</span></label>
+<label class="xt-tab xt-tab-C" for="xt-tab-C"><span class="xt-tab-index">C</span><span>身份</span></label>
+<label class="xt-tab xt-tab-D" for="xt-tab-D"><span class="xt-tab-index">D</span><span>先天词条</span></label>
+<label class="xt-tab xt-tab-E" for="xt-tab-E"><span class="xt-tab-index">E</span><span>灵根</span></label>
+<label class="xt-tab xt-tab-F" for="xt-tab-F"><span class="xt-tab-index">F</span><span>法</span></label>
+<label class="xt-tab xt-tab-G" for="xt-tab-G"><span class="xt-tab-index">G</span><span>道</span></label>
+<label class="xt-tab xt-tab-H" for="xt-tab-H"><span class="xt-tab-index">H</span><span>先天法器</span></label>
+<label class="xt-tab xt-tab-I" for="xt-tab-I"><span class="xt-tab-index">I</span><span>初始练气法</span></label>
+<label class="xt-tab xt-tab-J" for="xt-tab-J"><span class="xt-tab-index">J</span><span>初始功法</span></label>
+<label class="xt-tab xt-tab-K" for="xt-tab-K"><span class="xt-tab-index">K</span><span>出生地</span></label>
+<label class="xt-tab xt-tab-L" for="xt-tab-L"><span class="xt-tab-index">L</span><span>难度分级</span></label>
+<label class="xt-tab xt-tab-M" for="xt-tab-M"><span class="xt-tab-index">M</span><span>体验偏好</span></label>
+</nav><div class="xt-sidebar-foot">凡身入世，万象由心</div></aside>
+<div class="xt-content"><header class="xt-heading"><div class="xt-eyebrow">壹 · 命卷　━━━━　ORIGIN RECORD</div><h2>角色构建</h2><p>一念起，山海行。从此刻写下你的来处。</p></header>
+<div class="xt-panels">
+<section class="xt-panel xt-panel-A"><div class="xt-panel-head"><div><span class="xt-code">A / 13</span><h3>基础信息</h3></div><span class="xt-count"></span></div><div class="xt-options">
+<div class="xt-field"><label for="xt-character-name">姓名</label><input id="xt-character-name" type="text" maxlength="30" autocomplete="off" placeholder="输入角色名（也可在对话框输入）"></div>
+<section class="xt-group"><h4>性别</h4><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-gender" value="male"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">男</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-gender" value="female"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">女</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-gender" value="neuter"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">无相</span></span></label></div></section>
+<p class="xt-note">※ 姓名也可在对话框输入，如：构建角色：林清寒，女，B1，C1……</p>
+</div></section>
+<section class="xt-panel xt-panel-B"><div class="xt-panel-head"><div><span class="xt-code">B / 13</span><h3>种族</h3></div><span class="xt-count">13 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-B" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">华族</span><span class="xt-choice-desc">东陆农耕大族，精通天文历法，兼容百家功法，悟性均衡。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">蛮族</span><span class="xt-choice-desc">瀚州草原游牧，崇尚武力，气血炼体，弓马无双。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">南蛮</span><span class="xt-choice-desc">越州山地之民，擅蛊术与毒，体魄精悍，信仰图腾。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">羽族</span><span class="xt-choice-desc">宁州森林之主，精神力化翼，亲近月华与风灵。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">河洛</span><span class="xt-choice-desc">山中巧匠，矮小精悍，炼器机关术冠绝九州。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">夸父</span><span class="xt-choice-desc">殇州冰原巨人，肉身无双，极寒淬体，力拔山岳。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">鲛人</span><span class="xt-choice-desc">深海之民，人身蛟尾，善歌织水，泣泪成珠。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魅族</span><span class="xt-choice-desc">精神游丝凝聚之体，纯粹灵体，幻术通神，无固定形态。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">翼人</span><span class="xt-choice-desc">云州高空之民，肉翼遮天，擅风雷，孤傲排外。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">狐族</span><span class="xt-choice-desc">灵狐化形，魅惑天成，多尾进阶，常隐于人族市井。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">龙族</span><span class="xt-choice-desc">远古仙兽，天生大乘，行云布雨，居于深海龙宫。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">海族</span><span class="xt-choice-desc">深渊之民，形态各异，掌深海暗流，与鲛人纷争不断。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-B" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魔族</span><span class="xt-choice-desc">混沌归墟所出，嗜血好战，肉身变异，为正道不容。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-C"><div class="xt-panel-head"><div><span class="xt-code">C / 13</span><h3>身份</h3></div><span class="xt-count">43 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-C" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">寒门散修</span><span class="xt-choice-desc">无门无派，自由自在，一切机缘全靠双手去争。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">破落世家子</span><span class="xt-choice-desc">华族没落世家之后，身怀残卷或信物，渴求复兴。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宗门杂役</span><span class="xt-choice-desc">太一或蜀山等大派底层，熟知门规漏洞，隐忍待发。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宗门外门弟子</span><span class="xt-choice-desc">已入仙门，每月有灵石配给，需完成宗门任务。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">真传弟子/道子</span><span class="xt-choice-desc">宗门核心，资源倾斜，亦卷入派系与正魔之争。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">端朝官吏</span><span class="xt-choice-desc">修仙王朝底层官员，处理灵脉纠纷、修士治安。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宛州行商</span><span class="xt-choice-desc">商会学徒或行商，精于鉴宝、议价，人脉通达九州。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">隐世高人之徒</span><span class="xt-choice-desc">师承神秘散修，功法特异，但缺少同门援手。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">轮回者</span><span class="xt-choice-desc">身负前世记忆碎片，知晓某些秘境与上古秘辛。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">罪仙后裔</span><span class="xt-choice-desc">先祖曾犯天条，血脉受诅，需积攒功德化解。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">异界旅客</span><span class="xt-choice-desc">来自蓝星的灵魂，携现代学识，思维迥异于本界。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">凡人微末</span><span class="xt-choice-desc">出身贫寒山村，仅凭一颗向道之心爬上仙途。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">修仙世家子弟</span><span class="xt-choice-desc">华族大族嫡系，资源丰厚，但肩负家族联姻与权斗。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">蛮族勇士</span><span class="xt-choice-desc">朔方盟部落战士，擅骑射，以战功获封草场与奴隶。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">羽族鹤雪候补</span><span class="xt-choice-desc">宁州青都精锐，习空战暗杀，需月力考核。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="16"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">器宗学徒</span><span class="xt-choice-desc">北邙山器宗弟子，从辨矿、鼓风开始炼器生涯。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="17"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">丹霞谷药童</span><span class="xt-choice-desc">辨识百草，管理丹炉，梦想炼出九转金丹。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="18"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">鬼市掮客</span><span class="xt-choice-desc">在黑市中牵线搭桥，信息灵通，身份隐秘。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="19"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天玑阁外围</span><span class="xt-choice-desc">情报贩子，售卖消息，亦可能被阁中吸纳为正式成员。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="20"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">辰曜候补使徒</span><span class="xt-choice-desc">已被星辰标记，但未正式觉醒，常有怪异梦境。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="21"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">万魔殿魔兵</span><span class="xt-choice-desc">底层魔修，靠吞噬他人修为为生，随时可能被献祭。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="22"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">合欢宗侍者</span><span class="xt-choice-desc">修习阴阳采补，周旋于正邪之间，身份暧昧。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="23"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血煞教血奴</span><span class="xt-choice-desc">被种下血印，需定期贡献精血，渴望摆脱控制。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="24"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">幽冥宗守墓人</span><span class="xt-choice-desc">看管古战场与养尸地，通晓御鬼之术。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="25"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">离国残部遗孤</span><span class="xt-choice-desc">嬴氏旁支后人，藏于越州深山，不忘先祖荣光。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="26"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">南蛮蛊师传人</span><span class="xt-choice-desc">自幼与本命蛊共生，以蛊入道，肉身即蛊巢。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="27"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">擎梁羽部流亡者</span><span class="xt-choice-desc">澜州羽族残部后裔，在敌意中艰难求存。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="28"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">夸父冰窟弃民</span><span class="xt-choice-desc">因部落争斗被逐，独行于殇州冰原，沉默寡言。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="29"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">鲛人流浪歌者</span><span class="xt-choice-desc">离开海域，以歌喉魅惑或治愈，收集陆地故事。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="30"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魅族茶馆主人</span><span class="xt-choice-desc">化为人形，在宛州开茶馆，旁观人世百态。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="31"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">四海阁水手</span><span class="xt-choice-desc">随船探索七海，绘海图，寻遗迹，搏击风浪。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="32"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">机关师学徒</span><span class="xt-choice-desc">师从河洛名匠，研究战争机关与民用巧械。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="33"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">灵植夫</span><span class="xt-choice-desc">受雇于宗门或商会，管理灵田，通晓草木习性。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="34"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">解签卜者</span><span class="xt-choice-desc">在城池角落摆摊，粗通卜算，时灵时不灵。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="35"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">复仇修罗</span><span class="xt-choice-desc">全家被灭门，为复仇将身体炼成兵器，冷酷决绝。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="36"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">端朝皇子伴读</span><span class="xt-choice-desc">自幼伴读皇室，深谙宫廷权术与修仙资源之争。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="37"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">殇阳关戍卒</span><span class="xt-choice-desc">守卫九州第一关，历经血战，意志如铁。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="38"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">驿站信使</span><span class="xt-choice-desc">往返各州传递玉简，见闻广博，脚力惊人。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="39"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">戏班伶人</span><span class="xt-choice-desc">游走四方，以戏曲掩盖修士身份，刺探情报。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="40"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">极道帝尊/暴君</span><span class="xt-choice-desc">凡间皇朝开国者，以武入道，杀伐果决。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="41"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">书院学子</span><span class="xt-choice-desc">万象书院读书郎，博闻强识，修浩然气与推演术。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="42"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">瑶池医修</span><span class="xt-choice-desc">瑶池仙宫外门，习疗伤法术与驻颜丹方。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-C" value="43"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">破戒僧</span><span class="xt-choice-desc">原天音寺弟子，因犯戒被逐，携佛门残技浪迹天涯。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-D"><div class="xt-panel-head"><div><span class="xt-code">D / 13</span><h3>先天词条</h3></div><span class="xt-count">最多选择 5 项</span></div><div class="xt-options">
+<section class="xt-group"><h4>正面词条</h4><div class="xt-grid"><label class="xt-option"><input type="checkbox" name="xt-D" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">先天道体</span><span class="xt-choice-desc">修炼速度+30%，悟性大幅提升。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">气血如龙</span><span class="xt-choice-desc">基础气血、力量翻倍，体修天赋绝佳。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">玲珑道心</span><span class="xt-choice-desc">心魔抗性极高，突破瓶颈难度降低。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天眷之人</span><span class="xt-choice-desc">运气极佳，偶遇机缘概率增加。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">星辰印记</span><span class="xt-choice-desc">曾被辰曜标记，有概率觉醒为正式使徒。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">剑骨天成</span><span class="xt-choice-desc">剑道悟性超群，本命飞剑威力倍增。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">冰肌玉骨</span><span class="xt-choice-desc">肉身纯净，适合修炼瑶池或冰系功法。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">阴阳灵瞳</span><span class="xt-choice-desc">可窥灵气流动、阵法弱点、部分虚妄。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">百脉具通</span><span class="xt-choice-desc">先天经脉全开，炼气期毫无阻滞。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">龙血后裔</span><span class="xt-choice-desc">身怀稀薄龙族血脉，威压低阶妖族。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">过目不忘</span><span class="xt-choice-desc">学习功法、秘籍速度极快。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">百毒不侵</span><span class="xt-choice-desc">天生对多数毒素免疫，可驾驭毒功。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天生神力</span><span class="xt-choice-desc">肌肉密度十倍常人，近战伤害巨幅提升。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魅骨天成</span><span class="xt-choice-desc">魅力超群，魅惑类法术效果加倍。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">机关天才</span><span class="xt-choice-desc">对机关术领悟力极高，可越级拆解组装。</span></span></label></div></section>
+<section class="xt-group"><h4>负面词条</h4><div class="xt-grid"><label class="xt-option"><input type="checkbox" name="xt-D" value="16"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天道诅咒</span><span class="xt-choice-desc">雷劫威力倍增，且降临无规律。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="17"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">五弊三缺</span><span class="xt-choice-desc">必定缺少一物（如财、侣、子、寿等）。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="18"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">灵力迟滞</span><span class="xt-choice-desc">灵力运转速度-20%，施法修炼减慢。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="19"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">残缺灵根</span><span class="xt-choice-desc">灵根有损，突破大境界难度加倍。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="20"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">业力缠身</span><span class="xt-choice-desc">前世或祖上业力深重，引动业火劫概率高。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="21"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血脉冲突</span><span class="xt-choice-desc">混血导致灵力不稳，每月需服药压制。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="22"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">心魔滋生</span><span class="xt-choice-desc">极易产生心魔，且心魔强度更高。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="23"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天煞孤星</span><span class="xt-choice-desc">亲近之人易遭横祸，注定孤独。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="24"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">体质孱弱</span><span class="xt-choice-desc">肉身防御极低，近战劣势明显。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="25"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">畏光/畏水</span><span class="xt-choice-desc">对特定环境敏感，属性受限。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="26"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魔气侵蚀</span><span class="xt-choice-desc">曾遭魔气侵染，灵力带腐蚀性，但易失控。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="27"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">被诅咒的寿元</span><span class="xt-choice-desc">寿命上限减少三分之一。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="28"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">灵石依赖</span><span class="xt-choice-desc">修炼消耗灵石是常人两倍。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="29"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">神识迟滞</span><span class="xt-choice-desc">神识范围小，炼丹炼器困难。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="30"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血脉仇敌</span><span class="xt-choice-desc">被某特定族群敌视，见面即可能厮杀。</span></span></label></div></section>
+<section class="xt-group"><h4>特殊词条</h4><div class="xt-grid"><label class="xt-option"><input type="checkbox" name="xt-D" value="31"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">夺舍之疑</span><span class="xt-choice-desc">灵魂肉身契合度不足，高阶修士可能看破。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="32"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">上古残魂寄居</span><span class="xt-choice-desc">体内沉睡着古老意志，偶尔苏醒指点或夺舍。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="33"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">气运之子</span><span class="xt-choice-desc">天道宠儿，走路都能捡到宝，但伴随重重考验。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="34"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">双魂同体</span><span class="xt-choice-desc">两个意识共存，可切换或争夺主导权。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="35"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">轮回觉醒</span><span class="xt-choice-desc">逐步恢复前世记忆，可能获得完整传承。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="36"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">异界知识</span><span class="xt-choice-desc">保有蓝星现代知识，奇思妙想不断。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="37"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">献祭之体</span><span class="xt-choice-desc">可作为祭品开启特殊仪式，易被魔道觊觎。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="38"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天机屏蔽</span><span class="xt-choice-desc">无法被卜算推演，但亦无法享受天眷指引。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="39"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">言出法随（雏形）</span><span class="xt-choice-desc">语言偶尔影响现实，消耗极大。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="40"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魅惑体质</span><span class="xt-choice-desc">无论男女，皆易被他人倾慕，招致桃花劫。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="41"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">天生阵心</span><span class="xt-choice-desc">可直觉感知阵法节点，破阵如解绳。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="42"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">丹香之体</span><span class="xt-choice-desc">出汗如药香，炼丹成功率小幅提升。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="43"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">模仿之眼</span><span class="xt-choice-desc">看一遍法术即可粗略模仿，精度随时间提升。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="44"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">控火之体</span><span class="xt-choice-desc">天生火灵亲和，火系术法威力+15%。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="45"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">驭水之体</span><span class="xt-choice-desc">可水下呼吸，控水术消耗减半。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="46"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">通幽之体</span><span class="xt-choice-desc">天生能看到鬼魂，与幽冥生物交流无碍。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="47"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">药王体</span><span class="xt-choice-desc">血液可解百毒，但自身寿命较短。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="48"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">空灵体</span><span class="xt-choice-desc">对空间波动敏感，修习空间神通有优势。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="49"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">机械共鸣</span><span class="xt-choice-desc">触摸机关可感知内部构造，修复速度加快。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="50"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">谪仙之姿</span><span class="xt-choice-desc">容貌气度超凡脱俗，但常被误认为女扮男装或反之。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="51"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">乌鸦嘴</span><span class="xt-choice-desc">说坏事特别灵，好事不灵，需谨慎发言。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="52"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">幸运儿</span><span class="xt-choice-desc">骰子总是偏向你，赌博运气极佳。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="53"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">金属吞噬者</span><span class="xt-choice-desc">可吞噬金属强化肉身，但牙齿磨损快。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="54"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">灵魂链接</span><span class="xt-choice-desc">与某只动物或灵兽有天然羁绊，可共享感官。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="55"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">嗜睡症</span><span class="xt-choice-desc">每天需睡足六个时辰，但睡眠中修炼速度加倍。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="56"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">气味追踪</span><span class="xt-choice-desc">嗅觉极其灵敏，可追踪数日前残留气息。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="57"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">月光之子</span><span class="xt-choice-desc">月圆之夜全属性略微提升，适合羽族。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="58"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">星辰亲和</span><span class="xt-choice-desc">在星光下修炼效率+10%，辰曜成员格外关注。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="59"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血脉觉醒（未知）</span><span class="xt-choice-desc">体内潜伏着未知远古血脉，可能在关键时刻激活。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="60"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">福缘深厚</span><span class="xt-choice-desc">更容易获得NPC好感，讨价还价有优势。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="61"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">御兽亲和</span><span class="xt-choice-desc">动物对你天然亲近，驯兽成功率提升。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="62"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">武器精通</span><span class="xt-choice-desc">拿起任何武器都能快速上手，但难精通。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-D" value="63"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魔瘾</span><span class="xt-choice-desc">曾经使用魔道禁法，不时渴望魔气，但战力短暂提升。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-E"><div class="xt-panel-head"><div><span class="xt-code">E / 13</span><h3>灵根</h3></div><span class="xt-count">20 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><h4>基础五行</h4><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-E" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">金灵根</span><span class="xt-choice-desc">锋锐杀伐，适合剑修、炼器。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">木灵根</span><span class="xt-choice-desc">生机勃勃，适合疗伤、灵植、毒功。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">水灵根</span><span class="xt-choice-desc">柔韧绵长，适合控场、音修、鲛人功法。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">火灵根</span><span class="xt-choice-desc">爆发灼热，适合炼丹、强攻、铸造。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">土灵根</span><span class="xt-choice-desc">厚重稳固，适合防御、阵法、石族功法。</span></span></label></div></section>
+<section class="xt-group"><h4>变异灵根</h4><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-E" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">风灵根</span><span class="xt-choice-desc">速度见长，身法轻灵，羽族亲和。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">雷灵根</span><span class="xt-choice-desc">破邪显正，威力巨大，克制阴邪。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">冰灵根</span><span class="xt-choice-desc">极寒之力，控制与防御兼备，夸父常见。</span></span></label></div></section>
+<section class="xt-group"><h4>特殊灵根</h4><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-E" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">剑灵根</span><span class="xt-choice-desc">金属性变种，专为剑修而生，剑意自通。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">星辰灵根</span><span class="xt-choice-desc">可吸收星力修炼，与辰曜密切相关。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">音灵根</span><span class="xt-choice-desc">对声波敏感，适合音修、魅惑类法术。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血灵根</span><span class="xt-choice-desc">操控气血，常见于蛮族与血修，亦正亦邪。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">暗灵根</span><span class="xt-choice-desc">阴影潜行，适合暗杀、鬼修。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">幻灵根</span><span class="xt-choice-desc">天生幻术师，魅族与狐族多见。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">空间灵根</span><span class="xt-choice-desc">稀世罕见，对空间敏感，可修挪移神通。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="16"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">时间灵根</span><span class="xt-choice-desc">传说级灵根，可微幅影响时间流速。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="17"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">混沌灵根</span><span class="xt-choice-desc">可模拟任何属性，但功法难寻，进境极慢。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="18"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">乙木灵根</span><span class="xt-choice-desc">木灵根变种，专精治愈与催生灵植。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="19"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">庚金灵根</span><span class="xt-choice-desc">金灵根变种，极致锋锐，炼器极品。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-E" value="20"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">阴阳灵根</span><span class="xt-choice-desc">可修阴阳二气，合欢宗与瑶池皆重视。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-F"><div class="xt-panel-head"><div><span class="xt-code">F / 13</span><h3>法</h3><p>主修战斗方式</p></div><span class="xt-count">23 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-F" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">剑修</span><span class="xt-choice-desc">一剑破万法，极端追求攻击与纯粹。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">体修</span><span class="xt-choice-desc">肉身成圣，以气血煞气炼体，近战无敌。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">法修</span><span class="xt-choice-desc">术法洪流，掌握海量法术，适应性强。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">器修</span><span class="xt-choice-desc">本命法器为核心，多宝流，攻防一体。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">符修</span><span class="xt-choice-desc">符纸承载万法，可瞬发，消耗灵石。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">阵修</span><span class="xt-choice-desc">以阵为域，借天地之势，困杀皆可。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">音修</span><span class="xt-choice-desc">乐器或歌喉施法，范围攻击与魅惑。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">儒修</span><span class="xt-choice-desc">浩然正气，言出法随，克制邪魔。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">佛修</span><span class="xt-choice-desc">金刚怒目，佛法金身，超度亡魂。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魔修</span><span class="xt-choice-desc">吞噬掠夺，进境极快，但业力深重。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">蛊修</span><span class="xt-choice-desc">以身饲蛊，万蛊齐出，南蛮秘传。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">傀儡师</span><span class="xt-choice-desc">操控机关傀儡，本体脆弱但傀儡大军凶猛。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">机关术士</span><span class="xt-choice-desc">河洛绝学，攻城器械与自动人偶。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血修</span><span class="xt-choice-desc">以血为媒，血海大法，血煞教核心。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">鬼修</span><span class="xt-choice-desc">御鬼炼尸，幽冥宗传承，灵魂攻击。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="16"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">驭兽师</span><span class="xt-choice-desc">与灵兽协同作战，甚至合体，百兽山秘法。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="17"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">星命术士</span><span class="xt-choice-desc">引星辰之力，预言与星术攻击，辰曜使徒。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="18"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">太上剑典</span><span class="xt-choice-desc">天下剑道总纲，太一仙宗镇派绝学。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="19"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">大五行真经</span><span class="xt-choice-desc">五行法术皆可瞬发，适应性最强。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="20"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">军阵阵将</span><span class="xt-choice-desc">统御军阵，凝聚士卒之力，端朝武将之路。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="21"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">炼丹师（战斗）</span><span class="xt-choice-desc">掷丹为爆，药雾控场，丹修另类战斗法。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="22"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">符剑双修</span><span class="xt-choice-desc">剑上刻符，符化剑气，变化多端。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-F" value="23"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">幻术师</span><span class="xt-choice-desc">魅族/狐族专精，编织幻境，杀人于无形。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-G"><div class="xt-panel-head"><div><span class="xt-code">G / 13</span><h3>道</h3><p>副职/生活专精</p></div><span class="xt-count">15 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-G" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">丹道</span><span class="xt-choice-desc">炼制丹药，提升修为、疗伤、破境。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">器道</span><span class="xt-choice-desc">铸造法器法宝，修复神兵。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">阵道</span><span class="xt-choice-desc">布置阵法，守护洞府或困敌。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">符道</span><span class="xt-choice-desc">绘制符箓，一次性法术媒介。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">医道</span><span class="xt-choice-desc">疗伤治病，续筋接骨，瑶池仙宫擅长。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">毒道</span><span class="xt-choice-desc">制毒用毒，以毒攻毒，南蛮必备。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">卜道</span><span class="xt-choice-desc">推演天机，测算吉凶，寻人探宝。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">灵植道</span><span class="xt-choice-desc">培育灵草仙株，嫁接变异。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">灵厨道</span><span class="xt-choice-desc">烹饪灵食，提供永久或临时增益。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">御兽道</span><span class="xt-choice-desc">驯养灵兽，配种繁殖，百兽山秘技。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">傀儡/机关术</span><span class="xt-choice-desc">制作傀儡人偶或战争器械。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">幻形道</span><span class="xt-choice-desc">易容、伪装、制造幻象，行走江湖必备。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">文道</span><span class="xt-choice-desc">著书立说，以文入道，教化功德。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">音律道</span><span class="xt-choice-desc">制作乐器，谱写灵曲，辅助修行。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-G" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">观星道</span><span class="xt-choice-desc">观测星象，研究星辰之力，辰曜相关。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-H"><div class="xt-panel-head"><div><span class="xt-code">H / 13</span><h3>先天法器</h3></div><span class="xt-count">18 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-H" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">残破古玉</span><span class="xt-choice-desc">温养神魂，内部似有隐藏空间。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">无名剑胎</span><span class="xt-choice-desc">可成长飞剑胚胎，需精血神魂温养。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">蕴灵戒指</span><span class="xt-choice-desc">微小空间，时间流速稍慢。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">替身人偶</span><span class="xt-choice-desc">抵挡一次致死伤害或诅咒。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">太极图碎片</span><span class="xt-choice-desc">太一仙宗至宝的微小残片，可定风水。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">诛仙剑仿品</span><span class="xt-choice-desc">蕴含诛仙剑意，锋芒毕露，蜀山流出。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">昆仑镜仿品</span><span class="xt-choice-desc">可窥过去幻影，瑶池宫出品。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">七宝佛珠</span><span class="xt-choice-desc">天音寺加持，静心驱魔，缓慢修复神魂。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">春秋笔杆</span><span class="xt-choice-desc">万象书院遗落，书写文字可微调因果。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">万魔幡碎片</span><span class="xt-choice-desc">魔气缭绕，可号令低阶魔物。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">混沌钟碎片</span><span class="xt-choice-desc">传说至宝残片，钟声震魂，难以催动。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">造化玉碟碎片</span><span class="xt-choice-desc">蕴含大道法则，自动推演功法。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">小绿瓶</span><span class="xt-choice-desc">可催熟灵药，疑似时空异宝。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">星陨铁胎</span><span class="xt-choice-desc">未成型的星陨法器，可随心意塑形。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">龙鳞软甲</span><span class="xt-choice-desc">幼龙褪鳞所制，防御出众，自带龙威。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="16"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">千机匣</span><span class="xt-choice-desc">河洛秘造，可变形为多种工具或暗器。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="17"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">冰魄寒玉</span><span class="xt-choice-desc">霜骨冰渊产物，佩戴可免疫酷热，冰系亲和。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-H" value="18"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">魅影纱</span><span class="xt-choice-desc">魅族编织，穿戴后身形模糊，难以锁定。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-I"><div class="xt-panel-head"><div><span class="xt-code">I / 13</span><h3>初始练气法</h3></div><span class="xt-count">15 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-I" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">基础引气诀</span><span class="xt-choice-desc">大路货，中正平和，无属性。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">庚金剑气诀</span><span class="xt-choice-desc">金属性，灵力锋锐，适合剑修。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">长春功</span><span class="xt-choice-desc">木属性，附带微弱疗伤滋养。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">柔水诀</span><span class="xt-choice-desc">水属性，灵力绵长，恢复较快。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">离火心法</span><span class="xt-choice-desc">火属性，爆发力强，需注意心火。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">厚土诀</span><span class="xt-choice-desc">土属性，灵力厚重，防御稳固。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">小雷音功</span><span class="xt-choice-desc">雷属性，破邪显正，对阴邪伤害加成。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">冰心诀</span><span class="xt-choice-desc">冰属性，凝神静气，减缓走火入魔风险。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">风影诀</span><span class="xt-choice-desc">风属性，身法速度小幅提升。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">星辰引气法</span><span class="xt-choice-desc">吸收星力，需夜修，辰曜外围传承。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">百脉锻体法</span><span class="xt-choice-desc">体修基础，引气锻体，痛苦但根基扎实。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">血煞吐纳术</span><span class="xt-choice-desc">蛮族/血修法门，以血引气，爆发强。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">混元一气功</span><span class="xt-choice-desc">兼容五行，根基无比扎实，但进境缓慢。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">蛊灵同修法</span><span class="xt-choice-desc">南蛮秘法，以蛊为媒介引气入体。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-I" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">盗天机（禁法）</span><span class="xt-choice-desc">掠夺天地生机，修炼极快，有伤天和。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-J"><div class="xt-panel-head"><div><span class="xt-code">J / 13</span><h3>初始功法</h3></div><span class="xt-count">15 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-J" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">流光剑诀</span><span class="xt-choice-desc">快剑路数，追求极速连击。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">铜皮铁骨功</span><span class="xt-choice-desc">基础锻体，提升物理防御。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">火蛇术+水盾术</span><span class="xt-choice-desc">一攻一防两基础法术。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">御风步</span><span class="xt-choice-desc">基础身法，小幅提升闪避与速度。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">敛息术</span><span class="xt-choice-desc">隐藏自身修为与气息。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">驱物术</span><span class="xt-choice-desc">以灵力隔空操控物体，基础必备。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">掌心雷</span><span class="xt-choice-desc">基础雷法，破邪驱鬼。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">回春术</span><span class="xt-choice-desc">缓慢恢复轻微伤势，木属性。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">毒雾术</span><span class="xt-choice-desc">释放微量毒雾，干扰敌人视线与呼吸。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">白骨盾</span><span class="xt-choice-desc">幽冥宗基础，以骨为盾，阴气森森。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">纸人替身</span><span class="xt-choice-desc">消耗符纸，制造一个短暂的分身幻影。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">控火术</span><span class="xt-choice-desc">基础火系操控，可点燃或熄灭小火。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">凝水成冰</span><span class="xt-choice-desc">将水凝结为冰锥或冰面，控制小范围环境。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">草药辨识</span><span class="xt-choice-desc">认识百种常见灵草，采集不毁药性。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-J" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">机关拆卸</span><span class="xt-choice-desc">河洛基础，可拆解简单陷阱与锁具。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-K"><div class="xt-panel-head"><div><span class="xt-code">K / 13</span><h3>出生地</h3></div><span class="xt-count">25 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-K" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">中州·帝都天启城</span><span class="xt-choice-desc">九州心脏，各族汇聚，皇室脚下，机遇与危险并存。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">中州·殇阳关军镇</span><span class="xt-choice-desc">第一雄关，历代血战之地，民风彪悍，尚武成风。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">中州·太一山外围坊市</span><span class="xt-choice-desc">太一仙宗山门辐射范围，散修聚集，交易繁荣。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宛州·青石城</span><span class="xt-choice-desc">十城之一，灵马与皮革贸易中心，商会势力庞大。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宛州·淮安城</span><span class="xt-choice-desc">矿产与兵器铸造中心，河洛工匠云集，器宗近邻。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宛州·瑶池仙境入口镇</span><span class="xt-choice-desc">湖心岛外小镇，女修往来频繁，驻颜丹药闻名。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">瀚州·朔方原</span><span class="xt-choice-desc">蛮族核心草原，部落会盟之地，盘鞑天神信仰盛行。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">瀚州·天拓海峡北岸营地</span><span class="xt-choice-desc">蛮族南下跳板，走私者与冒险家出没。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="9"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">殇州·霜骨堡外围</span><span class="xt-choice-desc">夸父领地边缘，极寒之地，盛产冰系灵材。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="10"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">宁州·森林边缘羽族村落</span><span class="xt-choice-desc">羽族与外界缓冲带，可学习基础月力运用。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="11"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">澜州·擎梁半岛渔村</span><span class="xt-choice-desc">羽族飞地边缘，古战场遗迹散布，历史厚重。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="12"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">澜州·锁河山脚下</span><span class="xt-choice-desc">锁河剑派势力范围，剑修向往之地。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="13"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">越州·九原城</span><span class="xt-choice-desc">越州北部唯一华族城池，边荒气息浓厚。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="14"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">越州·石骨寨周边</span><span class="xt-choice-desc">南蛮山寨，蛊术与驯兽文化独特。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="15"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">越州·离国故都废墟</span><span class="xt-choice-desc">离国残部守护之地，军事堡垒，遗宝传闻不断。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="16"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">越州·万魔山脉外围</span><span class="xt-choice-desc">魔气笼罩，魔道修士遗留物多，危险与机缘并存。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="17"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">雷州·常绿城</span><span class="xt-choice-desc">热带风情，鲛人近海出没，温暖安逸。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="18"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">雷州·翡翠灵窟矿区</span><span class="xt-choice-desc">木属性灵石产地，矿工与护卫组成小镇。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="19"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">云州·沉沙北港</span><span class="xt-choice-desc">云州唯一对外港口，神秘翼人偶现，信息匮乏。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="20"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">涣海·鲛人珊瑚集市</span><span class="xt-choice-desc">浅海鲛人与陆地商贾的贸易点，以物易物。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="21"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">潍海·海峡暗礁镇</span><span class="xt-choice-desc">水下洞窟，各方势力情报中转站。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="22"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">滁潦海·海底沉船遗迹</span><span class="xt-choice-desc">大洪水前古城露出部分，寻宝猎人天堂。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="23"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">万象书院·藏天阁镇</span><span class="xt-choice-desc">书院山下学府镇，各国学子汇聚，文化氛围浓厚。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="24"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">蜀山·剑阁栈道</span><span class="xt-choice-desc">蜀山外围险道，求剑者跋涉之地。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-K" value="25"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">鬼市入口·无名荒村</span><span class="xt-choice-desc">某州隐秘村庄，每月特定日子开启鬼市传送阵。</span></span></label></div></section>
+</div></section>
+<section class="xt-panel xt-panel-L"><div class="xt-panel-head"><div><span class="xt-code">L / 13</span><h3>难度分级</h3></div><span class="xt-count">4 项 · 单选</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="radio" name="xt-L" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">凡人难度</span><span class="xt-choice-desc">适合初涉仙途者。修炼资源充足，敌人较弱，突破瓶颈轻松，可专注体验剧情与探索。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-L" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">修士难度</span><span class="xt-choice-desc">标准的修仙历练。资源需要争取，战斗需讲究策略，心魔与天劫将造成实质威胁。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-L" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">仙人难度</span><span class="xt-choice-desc">飞升之路遍布荆棘。修炼速度降低，死亡风险高，部分机缘隐藏极深，适合老练修士。</span></span></label>
+<label class="xt-option"><input type="radio" name="xt-L" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">混沌难度</span><span class="xt-choice-desc">天道无常，逆天而行。所有敌人大幅强化，资源极度匮乏，道心不坚者极易陨落。</span></span></label></div></section>
+<p class="xt-note">※ 难度将影响战斗强度、资源获取及部分事件走向，请谨慎选择。</p>
+</div></section>
+<section class="xt-panel xt-panel-M"><div class="xt-panel-head"><div><span class="xt-code">M / 13</span><h3>体验偏好</h3></div><span class="xt-count">最多选择 3 项</span></div><div class="xt-options">
+<section class="xt-group"><div class="xt-grid"><label class="xt-option"><input type="checkbox" name="xt-M" value="1"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">后宫三千</span><span class="xt-choice-desc">桃花运缠身，红颜知己遍布九州。修途不乏佳人相伴，情缘纠葛与风月雅事贯穿始终。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="2"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">种田经营</span><span class="xt-choice-desc">喜筑洞府、耕灵田、养灵兽，经营商会或宗门。于凡尘烟火中积累根基，厚积薄发。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="3"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">苟道至尊</span><span class="xt-choice-desc">隐忍低调，扮猪吃虎。初看平凡无奇，实则底牌无数，于关键时刻一鸣惊人。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="4"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">大道争锋</span><span class="xt-choice-desc">宗门征伐、秘境夺宝、正魔大战。身经百战，以杀证道，于血火中铸就赫赫威名。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="5"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">逍遥探奇</span><span class="xt-choice-desc">遍历四海八荒，寻访仙人遗迹、天地奇景。不为名利，只为领略世界之壮丽与神秘。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="6"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">豪杰云集</span><span class="xt-choice-desc">鹰击长空，鱼翔浅底，万类霜天竞自由。广结良友，与当世英杰共谱传奇，羁绊深厚。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="7"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">匠心问道</span><span class="xt-choice-desc">痴迷丹器符阵，以技艺入道。不喜争斗，愿以巧思破解万法，以造化之功闻名天下。</span></span></label>
+<label class="xt-option"><input type="checkbox" name="xt-M" value="8"><span class="xt-choice-mark" aria-hidden="true"></span><span class="xt-choice-body"><span class="xt-choice-name">逆天改命</span><span class="xt-choice-desc">身负血海深仇或宿命诅咒，步步为营，誓要打破天道枷锁，重写因果轮回。</span></span></label></div></section>
+<p class="xt-note">※ 偏好将影响剧情分支、随机事件与NPC互动倾向，可复选以融合多种乐趣。</p>
+</div></section>
+</div>
+</div></div></div>
