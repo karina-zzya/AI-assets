@@ -13,15 +13,16 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
 | 目录 | 内容 | 文件数 |
 | --- | --- | --- |
-| `背景/` | （旧层级）场景背景，已被 邻家大姐姐/ 取代 | 12 |
+| `背景/` | （旧层级）场景背景，已被 邻家大姐姐/ 取代，保留以兼容旧链接 | 12 |
 | `代码/` | 对话组件与 AI 输出模板 | 2 |
+| `立绘/` | 按项目归档的素材：`立绘/仙途/主界面/` | 2 |
 | `邻家大姐姐/` | 项目「邻家大姐姐」全部素材（立绘 12 + 玩家立绘 + 背景 12），平铺在同一目录 | 25 |
-| `同居姐姐/` |  | 12 |
-| `玩家/` |  | 1 |
-| `仙途/` | 项目「仙途」素材 | 23 |
+| `同居姐姐/` | （旧层级）角色立绘，已被 邻家大姐姐/ 取代，保留以兼容旧链接 | 12 |
+| `玩家/` | （旧层级）玩家立绘，已被 邻家大姐姐/ 取代，保留以兼容旧链接 | 1 |
+| `仙途/` | 项目「仙途」素材：`女1/` 角色图，`主界面/` 主界面背景与主角立绘 | 23 |
 | `预览/` | 渲染效果截图 | 5 |
 
-> 素材已按项目分目录：`邻家大姐姐/`（原「同居姐姐」项目，立绘/背景/玩家立绘平铺）、`仙途/女1/`（新项目，含 1·2·3·4 子目录）。旧的 `同居姐姐/`、`背景/`、`玩家/` 路径保留可用，避免已发出的链接失效。
+> 素材按项目分目录：`邻家大姐姐/`（立绘/背景/玩家立绘平铺）、`仙途/女1/`、`立绘/仙途/主界面/`。旧的 `同居姐姐/`、`背景/`、`玩家/` 路径保留可用，避免已发出的链接失效。
 
 ## 背景 — 共 12 个
 
@@ -46,6 +47,13 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 | --- | --- |
 | `代码/dialogue-ai-template.md` | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E4%BB%A3%E7%A0%81/dialogue-ai-template.md |
 | `代码/dialogue-stage.html` | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E4%BB%A3%E7%A0%81/dialogue-stage.html |
+
+## 立绘 — 共 2 个
+
+| 文件 | 直链（jsDelivr） |
+| --- | --- |
+| `立绘/仙途/主界面/xian-tu-hero-background.png` | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-background.png |
+| `立绘/仙途/主界面/xian-tu-hero-character.png` | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-character.png |
 
 ## 邻家大姐姐 — 共 25 个
 
@@ -142,4 +150,4 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
 - `.html` 在两个 CDN 上以 `text/plain` 返回（防脚本执行的安全策略），打开是源码；要在线预览需启用 GitHub Pages。
 - jsDelivr 对 `@main` 分支链接有缓存（约 12 小时），替换同名文件后想立刻生效请改文件名。
-- 每个项目目录里的 `外链.txt` 是该项目的链接清单（本地文件，未上传）。
+- 各项目目录里的 `外链.txt` 是该项目在本地的链接清单（未上传）。
