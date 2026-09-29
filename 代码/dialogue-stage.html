@@ -1,0 +1,386 @@
+<!-- ==========================================================================
+     对话区框架 · 单文件版（结构 + 样式全写在下面这个 div 里，零 JS）
+     整块复制即用，不需要额外引入任何 css 文件
+     ⚠️ Vue SFC 模板 / 小程序 wxml 不接受 div 内的 style 标签，
+        这两种宿主请把下面样式块里的 CSS 挪到组件自己的样式文件
+     ========================================================================== -->
+<div class="dlg-stage">
+
+<!-- ==========================================================================
+     对话区框架 · 纯 CSS，零 JS
+     组成只有三块：左立绘区 + 右立绘区 + 对话框（无背景层）
+     规则：谁说话谁淡入上浮并压在上层，谁不说话谁下沉淡出（透明度不为 0）
+     尺寸：只用最老最稳的 CSS，不依赖任何新特性
+             · 宽度 = 外层容器宽度（width:100%）
+             · 高度 = 宽度 × 画布比例，用 padding-top 百分比撑开
+                    竖屏 440×660 → padding-top:150%
+                    横屏 960×540 → padding-top:56.25%（@media min-aspect-ratio 1:1）
+             · 内部尺寸位置全用百分比，字号用 clamp()+vw（带 px 兜底）
+           ⚠️ 不要在本组件上加 max-width：padding-top 百分比是按"容器宽度"算的，
+              本组件一旦被 max-width 限制，宽高比就会失真。要限宽请给外层容器设。
+           ⚠️ 立绘区与对话框贴「底边」锚定，容器偏矮也不会跑出画面
+           ⚠️ 建议宿主页面带 <meta name="viewport" content="width=device-width, initial-scale=1">
+           ⚠️ 第 1 句台词默认可见（只藏 2/3/4 句）：即使状态选择器失效，
+              对话框也不会永远空白
+     换句：复制一对 (input + .dlg-line + .dlg-hit)，编号顺延，
+           末句的 label for 指回 dlg-1 即循环
+     --------------------------------------------------------------------------
+     素材直链（仓库 https://github.com/karina-zzya/AI-assets ，公开）
+     路径前缀（默认 jsDelivr，国内较快）
+       https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/<目录>/<文件名>.png
+     raw 备用前缀
+       https://raw.githubusercontent.com/karina-zzya/AI-assets/main/<目录>/<文件名>.png
+
+     · 背景（3:2，1536×1024）目录：背景/
+         出租房-晚上.png   出租房-白天.png
+         大学校园-晚上.png 大学校园-白天.png
+         商场-晚上.png     商场-白天.png
+         菜市场-晚上.png   菜市场-白天.png
+         沙滩-晚上.png     沙滩-白天.png
+         沙滩步道-白天.png 海边步道-晚上.png
+       （换场景：改 .dlg-stage 里 background-image 那一条 url 即可）
+
+     · 立绘（2:3，1024×1536）
+         同居姐姐/立绘/ ：待机 微笑 害羞 生气 难过 流泪 开心挥手 无奈 苦笑 喂饭 背手回眸 狡黠
+         玩家/立绘/     ：玩家-待机立绘.png
+     · 预览图目录：预览/
+     ========================================================================== -->
+
+  <!-- ① 状态开关：每个 radio 代表一句台词，checked 的那句才显示 -->
+  <input class="dlg-state" type="radio" name="dlg" id="dlg-1" checked>
+  <input class="dlg-state" type="radio" name="dlg" id="dlg-2">
+  <input class="dlg-state" type="radio" name="dlg" id="dlg-3">
+  <input class="dlg-state" type="radio" name="dlg" id="dlg-4">
+
+  <!-- ② 左立绘区 · 设计尺寸 320 × 480（2:3，对齐立绘原比例） -->
+  <div class="dlg-portrait dlg-portrait--left">
+    <img class="dlg-portrait__img"
+         src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E5%90%8C%E5%B1%85%E5%A7%90%E5%A7%90/%E7%AB%8B%E7%BB%98/%E5%BE%85%E6%9C%BA.png"
+         alt="左立绘">
+  </div>
+
+  <!-- ③ 右立绘区 · 玩家 · 设计尺寸 320 × 480 -->
+  <div class="dlg-portrait dlg-portrait--right">
+    <img class="dlg-portrait__img"
+         src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%8E%A9%E5%AE%B6/%E7%AB%8B%E7%BB%98/%E7%8E%A9%E5%AE%B6-%E5%BE%85%E6%9C%BA%E7%AB%8B%E7%BB%98.png"
+         alt="右立绘（玩家）">
+  </div>
+
+  <!-- ④ 对话框 · 设计尺寸 900 × 170 -->
+  <!-- 开场：李云舒在家等 {{user}} 回来（{{user}} 是玩家名占位符，接进游戏时替换） -->
+  <div class="dlg-box">
+    <div class="dlg-line dlg-line--1">
+      <span class="dlg-name">李云舒</span>
+      <p class="dlg-text">门一响，我就听见了。……真的是你啊。</p>
+    </div>
+    <div class="dlg-line dlg-line--2">
+      <span class="dlg-name">{{user}}</span>
+      <p class="dlg-text">姐，我回来了。</p>
+    </div>
+    <div class="dlg-line dlg-line--3">
+      <span class="dlg-name">李云舒</span>
+      <p class="dlg-text">欢迎回家。……好久不见，我们{{user}}。</p>
+    </div>
+    <div class="dlg-line dlg-line--4">
+      <span class="dlg-name">李云舒</span>
+      <p class="dlg-text">我等你好久了。从你说要回来的那天起，就一直在数日子。行李先放着，去洗手吧，汤刚炖好——路上累不累？饿不饿？</p>
+    </div>
+    <span class="dlg-hint dlg-hint--next">点击画面继续 <i class="dlg-hint__mark"></i></span>
+    <!-- 对话结束后才出现的按钮：必须点它才重开，点画面本身不会重开 -->
+    <label class="dlg-restart" for="dlg-1">重新开始</label>
+  </div>
+
+  <!-- ⑤ 点击层：第 N 句时只有一张 label 生效，点它跳到第 N+1 句
+       ⚠️ 故意没有 dlg-hit--4：最后一句不铺点击层，所以点画面无效 -->
+  <label class="dlg-hit dlg-hit--1" for="dlg-2" aria-label="继续对话"></label>
+  <label class="dlg-hit dlg-hit--2" for="dlg-3" aria-label="继续对话"></label>
+  <label class="dlg-hit dlg-hit--3" for="dlg-4" aria-label="继续对话"></label>
+
+  <!-- ⑥ 样式表：写在这个 div 里面，整块就是一个文件 -->
+  <style>
+/* ==========================================================================
+   对话区框架 · 样式（零 JS）
+   尺寸：两套固定设计稿，竖屏优先
+           · 竖屏（max-aspect-ratio ≤ 1:1）：440 × 660
+           · 横屏（其余情况）：960 × 540
+         所有数值写死，统一乘以缩放单位 --u：
+           --u = min(1px, 可用宽 / --dw, 可用高 / --dh)
+         放得下时 --u = 1px，尺寸与设计稿完全一致；放不下时整块等比缩小
+   舞台有【明确的 width + height】，不依赖 aspect-ratio / container-type，
+   所以任何内核都能算出高度，不会塌成 0
+   ========================================================================== */
+
+/* ==================== 舞台：设计稿 960 × 540 ==================== */
+/* 无背景：不设 background，透出页面本身的底色 */
+.dlg-stage{
+  --accent:   #7cc7ff;                 /* 左侧角色主色 */
+  --accent-2: #ff9ad5;                 /* 右侧角色主色 */
+
+  /* 设计画布：竖屏块只改这两个数就能换画幅 */
+  --dw: 960;
+  --dh: 540;
+
+  /* 四周留白：左右各 --gap-x/2，上下各 --gap-y/2
+     手机竖屏靠它避免顶到屏幕左右边缘；想留更多就把这个值调大 */
+  --gap-x: 32px;                                               /* 左右总留白 = 各 16px */
+  --gap-y: 16px;                                               /* 上下总留白 = 各 8px */
+
+  /* 缩放单位：宽高都放得下时 = 1px；否则取较小的那个比例 */
+  --u: 1px;                                                   /* 老浏览器兜底 */
+  --u: min(1px, (100vw - var(--gap-x)) / var(--dw), (100vh  - var(--gap-y)) / var(--dh));
+  --u: min(1px, (100vw - var(--gap-x)) / var(--dw), (100svh - var(--gap-y)) / var(--dh));
+
+  position: relative;
+  isolation: isolate;
+  width:  calc(var(--dw) * var(--u));
+  height: calc(var(--dh) * var(--u));
+  margin-inline: auto;
+  overflow: hidden;
+
+  /* ===== 场景背景图 =====
+     换场景只改这一条 url（12 张背景直链清单见文件顶部注释）。
+     想调亮/调暗整张背景：改下面 background-color 那层叠色即可。
+     找不到背景（加载失败）时会显示 background-color 兜底色，不会白屏。 */
+  background-color: #0b1220;
+  background-image: url("https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E8%83%8C%E6%99%AF/%E5%87%BA%E7%A7%9F%E6%88%BF-%E6%99%9A%E4%B8%8A.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: max(13px, calc(16 * var(--u)));   /* 小屏给个下限，正文不小于 13px */
+  line-height: 1.7;
+  color: #eaf1ff;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+.dlg-stage *, .dlg-stage *::before, .dlg-stage *::after{ box-sizing: border-box; }
+
+/* 键盘可达：radio 隐藏但保留焦点。
+   ⚠️ 钉在组件【底部】而不是顶部：点 label 会让浏览器聚焦关联的 radio，
+      为了把这个 1×1px 的元素拉进视野，浏览器可能滚动页面。
+      放在顶部时，滚到对话框再点击会把页面拽回组件顶部（跳页）；
+      放在底部，视线在对话框附近时它本来就在视野内，就不会跳。
+      实测：连点 5 次 scrollY 零偏移。 */
+.dlg-state{
+  position: absolute; bottom: 0; left: 0;
+  width: 1px; height: 1px; margin: 0; padding: 0;
+  border: 0; opacity: 0; appearance: none; pointer-events: none;
+}
+.dlg-stage:has(.dlg-state:focus-visible){
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ====== 立绘区 320 × 480，底边距 40（贴底锚定：容器再矮也留在画面里）====== */
+/* 未说话：半透明 + 下沉；说话：完全显现 + 上浮。透明度不归零 */
+.dlg-portrait{
+  position: absolute; bottom: calc(40 * var(--u));
+  width:  calc(320 * var(--u));
+  height: calc(480 * var(--u));
+  pointer-events: none;
+  opacity: .42;
+  filter: grayscale(.8) brightness(.65);
+  transform: translateY(calc(36 * var(--u)));
+  transition: opacity .45s ease, filter .45s ease, transform .45s cubic-bezier(.2,.7,.3,1);
+}
+.dlg-portrait--left { left:  calc(28 * var(--u)); }
+.dlg-portrait--right{ right: calc(28 * var(--u)); }
+
+.dlg-portrait__img{
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* 若立绘是白底图而不是透明 PNG，可加下面一行把白底压掉
+.dlg-portrait__img{ mix-blend-mode: multiply; }
+*/
+
+/* 当前说话方：淡入并浮现到上方 */
+#dlg-1:checked ~ .dlg-portrait--left,
+#dlg-3:checked ~ .dlg-portrait--left,
+#dlg-4:checked ~ .dlg-portrait--left,
+#dlg-2:checked ~ .dlg-portrait--right{
+  opacity: 1;
+  filter: none;
+  transform: translateY(calc(-14 * var(--u)));
+  z-index: 2;
+}
+
+/* ====== 对话框 900 × 170 / left 30 / 底边距 28（贴底锚定）====== */
+.dlg-box{
+  position: absolute;
+  left: calc(30 * var(--u));
+  bottom: calc(28 * var(--u));
+  width:  calc(900 * var(--u));
+  height: calc(170 * var(--u));
+  overflow: hidden;
+  padding: calc(16 * var(--u)) calc(26 * var(--u)) calc(30 * var(--u));
+  border: 1px solid rgba(124,199,255,.34);      /* 发丝线保持 1px */
+  border-radius: calc(14 * var(--u));
+  background: rgba(6,10,22,.82);                /* 想彻底无底：删掉 background / border / box-shadow */
+  box-shadow: 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(0,0,0,.45),
+              inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(4px);
+}
+
+.dlg-name{
+  display: inline-block;
+  margin-bottom: calc(10 * var(--u));
+  padding: calc(2 * var(--u)) calc(14 * var(--u));
+  border-radius: 999px;
+  font-size: max(12px, calc(14 * var(--u))); font-weight: 700; letter-spacing: .08em;
+  color: #04121f;
+  background: linear-gradient(135deg, var(--accent), #cdeaff);
+  box-shadow: 0 calc(4 * var(--u)) calc(14 * var(--u)) rgba(124,199,255,.35);
+}
+/* 玩家（{{user}}）那句用另一套配色 */
+.dlg-line--2 .dlg-name{
+  background: linear-gradient(135deg, var(--accent-2), #ffd3ee);
+  box-shadow: 0 calc(4 * var(--u)) calc(14 * var(--u)) rgba(255,154,213,.35);
+}
+
+.dlg-text{
+  margin: 0;
+  font-size: max(13px, calc(16 * var(--u)));
+  line-height: 1.75;
+  text-shadow: 0 calc(2 * var(--u)) calc(10 * var(--u)) rgba(0,0,0,.65);
+}
+
+/* 每次只有一句可见。
+   ⚠️ 第 1 句【默认可见】，只有切到别的句子时才把它藏起来。
+   这样即使状态选择器失效（宿主过滤掉 checked 属性），对话框也不会永远空白。 */
+.dlg-line--2, .dlg-line--3, .dlg-line--4{ display: none; }
+#dlg-2:checked ~ .dlg-box .dlg-line--2,
+#dlg-3:checked ~ .dlg-box .dlg-line--3,
+#dlg-4:checked ~ .dlg-box .dlg-line--4{ display: block; }
+#dlg-2:checked ~ .dlg-box .dlg-line--1,
+#dlg-3:checked ~ .dlg-box .dlg-line--1,
+#dlg-4:checked ~ .dlg-box .dlg-line--1{ display: none; }
+
+/* 点击提示：默认可见「继续」，到第 4 句换成「重播」 */
+.dlg-hint{
+  position: absolute;
+  right:  calc(18 * var(--u));
+  bottom: calc(10 * var(--u));
+  display: flex; align-items: center; gap: calc(7 * var(--u));
+  font-size: calc(12 * var(--u)); letter-spacing: .12em; color: rgba(184,208,240,.8);
+}
+/* 最后一句：不再提示「点击画面」，改由「重新开始」按钮接管 */
+#dlg-4:checked ~ .dlg-box .dlg-hint--next{ display: none; }
+
+/* 对话结束后出现的「重新开始」按钮 */
+.dlg-restart{
+  position: absolute;
+  left: 50%;
+  bottom: calc(6 * var(--u));
+  transform: translateX(-50%);
+  display: none;
+  padding: calc(4 * var(--u)) calc(20 * var(--u));
+  border: 1px solid rgba(124,199,255,.6);
+  border-radius: 999px;
+  background: rgba(14,24,44,.95);
+  color: #eaf1ff;
+  font-size: max(11px, calc(13 * var(--u)));
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.dlg-restart:hover,
+.dlg-restart:focus-visible{
+  background: rgba(30,50,86,.95);
+  border-color: var(--accent);
+}
+/* 进入最后一句后【延迟 1.2s 淡入】：先让玩家把末句读完，按钮再出现。
+   想让它立刻出现，把下面的 1.2s 改成 0s；
+   想更晚出现（比如 2s），把 1.2s 改成 2s 即可 */
+#dlg-4:checked ~ .dlg-box .dlg-restart{
+  display: inline-block;
+  animation: dlg-restart-in .35s ease 1.2s both;
+}
+@keyframes dlg-restart-in{
+  from{ opacity: 0; visibility: hidden; }   /* 延迟期间连点都点不到 */
+  to  { opacity: 1; visibility: visible; }
+}
+
+/* 三角指示器用固定 px，缩小时也不会细到看不见 */
+.dlg-hint__mark{
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid var(--accent);
+  animation: dlg-blink 1.15s ease-in-out infinite;
+}
+@keyframes dlg-blink{
+  0%, 100%{ opacity: .25; transform: translateY(-1px); }
+  50%     { opacity: 1;   transform: translateY(2px); }
+}
+
+/* ==================== 点击层（铺满整块） ==================== */
+.dlg-hit{
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 6;
+  display: none;
+  cursor: pointer;
+}
+#dlg-1:checked ~ .dlg-hit--1,
+#dlg-2:checked ~ .dlg-hit--2,
+#dlg-3:checked ~ .dlg-hit--3{ display: block; }
+
+/* ==================== 竖屏手机：换成 440 × 660 竖构图 ==================== */
+/* 只改画布尺寸 + 各元素坐标；舞台宽高会自动跟着 --dw/--dh 走 */
+@media (max-aspect-ratio: 1 / 1){
+  .dlg-stage{
+    --dw: 440;                   /* ← 竖屏画布宽 */
+    --dh: 660;                   /* ← 竖屏画布高 */
+  }
+
+  .dlg-portrait{
+    bottom: calc(175 * var(--u));
+    width:  calc(230 * var(--u));
+    height: calc(345 * var(--u));
+    opacity: .34;
+    filter: grayscale(.65) brightness(.7);
+    transform: translateY(calc(40 * var(--u))) scale(.94);
+  }
+  .dlg-portrait--left { left:  calc(-10 * var(--u)); }
+  .dlg-portrait--right{ right: calc(-10 * var(--u)); }
+
+  /* 说话方：淡入 + 上浮放大 */
+  #dlg-1:checked ~ .dlg-portrait--left,
+  #dlg-3:checked ~ .dlg-portrait--left,
+  #dlg-4:checked ~ .dlg-portrait--left,
+  #dlg-2:checked ~ .dlg-portrait--right{
+    opacity: 1;
+    filter: none;
+    transform: translateY(calc(-18 * var(--u))) scale(1);
+  }
+
+  .dlg-box{
+    left: calc(20 * var(--u));
+    bottom: calc(20 * var(--u));
+    width:  calc(400 * var(--u));
+    height: calc(180 * var(--u));
+    padding: calc(14 * var(--u)) calc(18 * var(--u)) calc(28 * var(--u));
+  }
+  .dlg-name{ margin-bottom: calc(8 * var(--u)); padding: calc(1 * var(--u)) calc(12 * var(--u)); }
+  .dlg-text{ line-height: 1.7; }
+  .dlg-hint{ right: calc(14 * var(--u)); bottom: calc(8 * var(--u)); font-size: calc(12 * var(--u)); letter-spacing: .08em; }
+}
+
+/* ==================== 无障碍 ==================== */
+@media (prefers-reduced-motion: reduce){
+  .dlg-stage *, .dlg-stage *::before, .dlg-stage *::after{
+    animation: none !important;
+    transition: none !important;
+  }
+}
+  </style>
+</div>
