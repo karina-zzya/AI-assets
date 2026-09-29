@@ -45,45 +45,45 @@ jsDelivr : https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/
 GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 ```
 
-**背景（场景）** — 目录 `背景/` — 1536×1024（3:2）
+**背景（场景）** — 目录 `邻家大姐姐/` — 1536×1024（3:2）
 
 | 文件名 | jsDelivr 链接 |
 | --- | --- |
-| 出租房-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/出租房-晚上.png |
-| 出租房-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/出租房-白天.png |
-| 大学校园-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/大学校园-晚上.png |
-| 大学校园-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/大学校园-白天.png |
-| 商场-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/商场-晚上.png |
-| 商场-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/商场-白天.png |
-| 菜市场-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/菜市场-晚上.png |
-| 菜市场-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/菜市场-白天.png |
-| 沙滩-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/沙滩-晚上.png |
-| 沙滩-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/沙滩-白天.png |
-| 沙滩步道-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/沙滩步道-白天.png |
-| 海边步道-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/海边步道-晚上.png |
+| 出租房-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/出租房-晚上.png |
+| 出租房-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/出租房-白天.png |
+| 大学校园-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/大学校园-晚上.png |
+| 大学校园-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/大学校园-白天.png |
+| 商场-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/商场-晚上.png |
+| 商场-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/商场-白天.png |
+| 菜市场-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/菜市场-晚上.png |
+| 菜市场-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/菜市场-白天.png |
+| 沙滩-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/沙滩-晚上.png |
+| 沙滩-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/沙滩-白天.png |
+| 沙滩步道-白天.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/沙滩步道-白天.png |
+| 海边步道-晚上.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/海边步道-晚上.png |
 
-**角色立绘（李云舒）** — 目录 `同居姐姐/立绘/` — 1024×1536（2:3）
-
-| 文件名 | jsDelivr 链接 |
-| --- | --- |
-| 待机.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/待机.png |
-| 微笑.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/微笑.png |
-| 害羞.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/害羞.png |
-| 生气.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/生气.png |
-| 难过.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/难过.png |
-| 流泪.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/流泪.png |
-| 开心挥手.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/开心挥手.png |
-| 无奈.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/无奈.png |
-| 苦笑.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/苦笑.png |
-| 喂饭.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/喂饭.png |
-| 背手回眸.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/背手回眸.png |
-| 狡黠.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/狡黠.png |
-
-**玩家立绘** — 目录 `玩家/立绘/` — 1024×1536（2:3）
+**角色立绘（李云舒）** — 目录 `邻家大姐姐/` — 1024×1536（2:3）
 
 | 文件名 | jsDelivr 链接 |
 | --- | --- |
-| 玩家-待机立绘.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png |
+| 待机.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/待机.png |
+| 微笑.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/微笑.png |
+| 害羞.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/害羞.png |
+| 生气.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/生气.png |
+| 难过.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/难过.png |
+| 流泪.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/流泪.png |
+| 开心挥手.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/开心挥手.png |
+| 无奈.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/无奈.png |
+| 苦笑.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/苦笑.png |
+| 喂饭.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/喂饭.png |
+| 背手回眸.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/背手回眸.png |
+| 狡黠.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/狡黠.png |
+
+**玩家立绘** — 目录 `邻家大姐姐/` — 1024×1536（2:3）
+
+| 文件名 | jsDelivr 链接 |
+| --- | --- |
+| 玩家-待机立绘.png | https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/玩家-待机立绘.png |
 
 ---
 
@@ -182,9 +182,9 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
 | 槽位 | 位置 | 怎么写 |
 | --- | --- | --- |
-| **背景** | `<img class="dg-bg" src="…">` | 用对照表里 `背景/` 的链接，`object-fit:cover` 自动裁满画面。换场景只改这一条；每步可以不同（比如走出门就切成「大学校园-晚上」） |
-| **角色立绘** | `<img class="dg-role" src="…">` | 用 `同居姐姐/立绘/` 的链接，按情绪选（待机 / 微笑 / 害羞 / 生气 / 难过 / 流泪 / 开心挥手 / 无奈 / 苦笑 / 喂饭 / 背手回眸 / 狡黠）。亮暗由说话方自动决定 |
-| **玩家立绘** | `<img class="dg-player" src="…">` | 用 `玩家/立绘/玩家-待机立绘.png`。若不想要主角立绘，整行删掉即可 |
+| **背景** | `<img class="dg-bg" src="…">` | 用对照表里 `邻家大姐姐/` 的链接，`object-fit:cover` 自动裁满画面。换场景只改这一条；每步可以不同（比如走出门就切成「大学校园-晚上」） |
+| **角色立绘** | `<img class="dg-role" src="…">` | 用 `邻家大姐姐/` 的链接，按情绪选（待机 / 微笑 / 害羞 / 生气 / 难过 / 流泪 / 开心挥手 / 无奈 / 苦笑 / 喂饭 / 背手回眸 / 狡黠）。亮暗由说话方自动决定 |
+| **玩家立绘** | `<img class="dg-player" src="…">` | 用 `邻家大姐姐/玩家-待机立绘.png`。若不想要主角立绘，整行删掉即可 |
 | **说话人** | `<b class="dg-name">` | 角色写「李云舒」，玩家写 `{{user}}`（这两个字符别改，游戏里会自动替换成玩家名）。玩家那句的名牌会自动变成粉色 |
 | **台词** | `<p class="dg-text">` | 建议 **不超过 60 字**（框内约 3 行 × 每行 22 字），超出会被裁切。长台词拆成两步 |
 
@@ -225,9 +225,9 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
   <input class="dg-s" type="radio" name="dg1" id="dg1-1" checked>
   <div class="dg-step dg-speak-role">
-    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/出租房-晚上.png" alt="">
-    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/待机.png" alt="李云舒">
-    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/出租房-晚上.png" alt="">
+    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/待机.png" alt="李云舒">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/玩家-待机立绘.png" alt="{{user}}">
     <div class="dg-box">
       <b class="dg-name">李云舒</b>
       <p class="dg-text">门一响，我就听见了。……真的是你啊。</p>
@@ -237,9 +237,9 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
   <input class="dg-s" type="radio" name="dg1" id="dg1-2">
   <div class="dg-step dg-speak-player">
-    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/出租房-晚上.png" alt="">
-    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/待机.png" alt="李云舒">
-    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/出租房-晚上.png" alt="">
+    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/待机.png" alt="李云舒">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/玩家-待机立绘.png" alt="{{user}}">
     <div class="dg-box">
       <b class="dg-name">{{user}}</b>
       <p class="dg-text">姐，我回来了。</p>
@@ -249,9 +249,9 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
   <input class="dg-s" type="radio" name="dg1" id="dg1-3">
   <div class="dg-step dg-speak-role">
-    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/背景/出租房-晚上.png" alt="">
-    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/同居姐姐/立绘/微笑.png" alt="李云舒">
-    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/出租房-晚上.png" alt="">
+    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/微笑.png" alt="李云舒">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/邻家大姐姐/玩家-待机立绘.png" alt="{{user}}">
     <div class="dg-box">
       <b class="dg-name">李云舒</b>
       <p class="dg-text">欢迎回家。……好久不见，我们{{user}}。我等你好久了。</p>
