@@ -379,10 +379,10 @@
   #xian-tu-embed #xt-tab-A:checked ~ .xt-builder .xt-panel-A,#xian-tu-embed #xt-tab-B:checked ~ .xt-builder .xt-panel-B,#xian-tu-embed #xt-tab-C:checked ~ .xt-builder .xt-panel-C,#xian-tu-embed #xt-tab-D:checked ~ .xt-builder .xt-panel-D,#xian-tu-embed #xt-tab-E:checked ~ .xt-builder .xt-panel-E,#xian-tu-embed #xt-tab-F:checked ~ .xt-builder .xt-panel-F,#xian-tu-embed #xt-tab-G:checked ~ .xt-builder .xt-panel-G,#xian-tu-embed #xt-tab-H:checked ~ .xt-builder .xt-panel-H,#xian-tu-embed #xt-tab-I:checked ~ .xt-builder .xt-panel-I,#xian-tu-embed #xt-tab-J:checked ~ .xt-builder .xt-panel-J,#xian-tu-embed #xt-tab-K:checked ~ .xt-builder .xt-panel-K,#xian-tu-embed #xt-tab-L:checked ~ .xt-builder .xt-panel-L,#xian-tu-embed #xt-tab-M:checked ~ .xt-builder .xt-panel-M{display:block!important}
 }
 
-/* Mobile art cycle: both pairs use small CDN-hosted WebP images, fetched once
-   and reused during the loop instead of decoding the original large PNG files. */
-@keyframes xt-mobile-a{0%,47%{opacity:1}50%,97%{opacity:0}100%{opacity:1}}
-@keyframes xt-mobile-b{0%,47%{opacity:0}50%,97%{opacity:1}100%{opacity:0}}
+/* Mobile art cycle: each pair has an 8s slot in a 16s loop. Background and
+   character share a 1.2s crossfade (42.5–50%, 92.5–100%) using compact WebP. */
+@keyframes xt-mobile-a{0%,42.5%{opacity:1}50%,92.5%{opacity:0}100%{opacity:1}}
+@keyframes xt-mobile-b{0%,42.5%{opacity:0}50%,92.5%{opacity:1}100%{opacity:0}}
 @media (max-width: 760px), (hover: none), (pointer: coarse){
   #xian-tu-embed .xt-scene-b{display:block!important;background-image:url("https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@1b26456941afca18ac741b72f0b455aa58819765/%E7%AB%8B%E7%BB%98/%E4%BB%99%E9%80%94/%E4%B8%BB%E7%95%8C%E9%9D%A2/xian-tu-hero-background-2-mobile.webp")!important;background-position:center!important}
   #xian-tu-embed .xt-hero-2{display:block!important}
@@ -395,26 +395,14 @@
   #xian-tu-embed .xt-scene:not(.xt-scene-b),#xian-tu-embed .xt-hero-1{animation:xt-swap-a-step 16s linear infinite!important}
   #xian-tu-embed .xt-scene-b,#xian-tu-embed .xt-hero-2{animation:xt-swap-b-step 16s linear infinite!important}
 }
-/* ══════ 移动端轮切：已开启（16s 周期 = 每组 8s；立绘与背景同步瞬时切换）══════
-   为什么放在最末：上面有若干"关闭轮切"的规则（display:none / animation:none!important），
-   这里用同样的 !important 放在它们之后 → 依据"同权重后来者胜"接管轮切，不需要去改那些规则。
-   注意：本段只放开"轮切"本身；上面 .xt-character 的 animation:none!important 仍然生效，
-   所以移动端的"待机摆动"依旧关着（这是之前确认要关的）。
-   要再次关闭：删掉这一整段，并把上面 .xt-scene-b/.xt-hero-2 那条加回 display:none!important。 */
-@media (max-width: 760px), (hover: none), (pointer: coarse){
-  #xian-tu-embed .xt-scene{animation:xt-swap-a-step 16s linear infinite!important}
-  #xian-tu-embed .xt-scene-b{animation:xt-swap-b-step 16s linear infinite!important}
-  #xian-tu-embed .xt-hero-1{animation:xt-swap-a-step 16s linear infinite!important}
-  #xian-tu-embed .xt-hero-2{animation:xt-swap-b-step 16s linear infinite!important}
-}
-/* ══════ 移动端：加回角色待机晃动 ══════
+/* ══════ 移动端轮切与角色待机晃动 ══════
    之前为排查移动端卡顿，把 .xt-character 的 animation 整个关掉了（上面那条 animation:none!important），
-   导致移动端没有晃动。这里在样式最末用同权重 + !important 接管"动画列表"，只恢复晃动、不动任何其它属性：
+   导致移动端没有晃动。这里在样式最末用同权重 + !important 接管动画列表：
      · 立绘 = xt-idle（晃动，7.5s）+ 轮切（沿用你在上面定义的 xt-mobile-a/xt-mobile-b，16s = 每组 8s）
      · 背景 = 只保留轮切（背景本来就不该晃）
    放在最末的原因：同权重时后来者胜，不需要去改上面那些关闭规则（想再关掉只需删掉本段）。 */
 @media (max-width: 760px), (hover: none), (pointer: coarse){
-  #xian-tu-embed .xt-scene:not(.xt-scene-b),#xian-tu-embed .xt-scene{animation:xt-mobile-a 16s linear infinite!important}
+  #xian-tu-embed .xt-scene:not(.xt-scene-b){animation:xt-mobile-a 16s linear infinite!important}
   #xian-tu-embed .xt-scene-b{animation:xt-mobile-b 16s linear infinite!important}
   #xian-tu-embed .xt-hero-1{animation:xt-idle 7.5s ease-in-out infinite,xt-mobile-a 16s linear infinite!important}
   #xian-tu-embed .xt-hero-2{animation:xt-idle 7.5s ease-in-out infinite,xt-mobile-b 16s linear infinite!important}
