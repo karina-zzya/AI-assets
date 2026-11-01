@@ -13,6 +13,7 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
 | 目录 | 内容 | 文件数 |
 | --- | --- | --- |
+| `Yuki/` | Yuki 四形态透明立绘与外链使用规则 | 48 张立绘 |
 | `背景/` | （旧层级）场景背景，已被 邻家大姐姐/ 取代，保留以兼容旧链接 | 12 |
 | `代码/` | 对话组件与 AI 输出模板 | 2 |
 | `立绘/` | 按项目归档的素材：`立绘/仙途/主界面/` | 2 |
@@ -151,3 +152,12 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 - `.html` 在两个 CDN 上以 `text/plain` 返回（防脚本执行的安全策略），打开是源码；要在线预览需启用 GitHub Pages。
 - jsDelivr 对 `@main` 分支链接有缓存（约 12 小时），替换同名文件后想立刻生效请改文件名。
 - 各项目目录里的 `外链.txt` 是该项目在本地的链接清单（未上传）。
+
+
+## Yuki — 四形态透明立绘，共 48 张
+
+新增 `Yuki/立绘/`，按萝莉形态、少女形态、御姐形态、病娇御姐形态分类，每种 12 张表情与动作。
+
+- [素材与目录总览](./Yuki/README.md)
+- [外链使用规则及 AI 对话模板](./Yuki/外链使用规则.md)
+- [机器可读素材索引](./Yuki/assets.json)
