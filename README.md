@@ -13,7 +13,7 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
 | 目录 | 内容 | 文件数 |
 | --- | --- | --- |
-| `xuyingxue/opening/` | 许映雪三页便签开场白、图片与标题字体 | 5 张图片 + 1 份字体 + 代码 |
+| `xuyingxue/` | 许映雪立绘、校园背景、对话规则和便签开场 | 22 张立绘 + 12 个背景；复用男主 |
 | `Yuki/` | Yuki 四形态透明立绘与外链使用规则 | 48 张立绘 |
 | `背景/` | （旧层级）场景背景，已被 邻家大姐姐/ 取代，保留以兼容旧链接 | 12 |
 | `代码/` | 对话组件与 AI 输出模板 | 2 |
@@ -163,6 +163,9 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 - [外链使用规则及 AI 对话模板](./Yuki/外链使用规则.md)
 - [机器可读素材索引](./Yuki/assets.json)
 
-## 许映雪 — 三页便签开场白
+## 许映雪 — 校园对话素材与便签开场
 
-- [代码、素材与原始外链](./xuyingxue/opening/README.md)
+- [项目总览与外链规则](./xuyingxue/README.md)
+- [对话使用规则](./xuyingxue/对话使用规则.md) · [代码规范](./xuyingxue/代码规范.md)
+- [完整素材索引](./xuyingxue/assets.json) · [可粘贴对话示例](./xuyingxue/code/dialogue-example.txt)
+- [原三页便签开场](./xuyingxue/opening/README.md)
