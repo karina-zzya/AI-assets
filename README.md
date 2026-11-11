@@ -13,6 +13,7 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 
 | 目录 | 内容 | 文件数 |
 | --- | --- | --- |
+| `xuyingxue/opening/` | 许映雪三页便签开场白、图片与标题字体 | 4 张图片 + 1 份字体 + 代码 |
 | `Yuki/` | Yuki 四形态透明立绘与外链使用规则 | 48 张立绘 |
 | `背景/` | （旧层级）场景背景，已被 邻家大姐姐/ 取代，保留以兼容旧链接 | 12 |
 | `代码/` | 对话组件与 AI 输出模板 | 2 |
@@ -161,3 +162,7 @@ GitHub   : https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
 - [素材与目录总览](./Yuki/README.md)
 - [外链使用规则及 AI 对话模板](./Yuki/外链使用规则.md)
 - [机器可读素材索引](./Yuki/assets.json)
+
+## 许映雪 — 三页便签开场白
+
+- [代码、素材与原始外链](./xuyingxue/opening/README.md)
