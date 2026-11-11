@@ -152,11 +152,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 @media(max-width:430px){.xy-notes{padding:32px 30px 26px 20px}.xy-notes .xy-name{font-size:37px;letter-spacing:.04em}.xy-notes .xy-pencil{width:94px;margin-top:9px}.xy-notes .xy-photo{width:158px;right:29px;top:66px;padding:6px 6px 24px;transform:rotate(7deg)}.xy-notes .xy-photo img{height:102px}.xy-notes .xy-photo:before{left:46px;top:-9px;height:18px;width:51px}.xy-notes .xy-photo figcaption{font-size:9px;letter-spacing:0}.xy-notes .xy-masthead{height:147px}.xy-notes .xy-paper{padding:20px 18px 0}.xy-notes .xy-title{font-size:19px;max-width:100%;padding-top:20px;min-height:83px}.xy-notes .xy-paper:before{left:8px}.xy-notes .xy-reading{height:365px;padding-right:8px}.xy-notes .xy-paragraph{font-size:15px;line-height:2.06;letter-spacing:0}.xy-notes .xy-corner{right:-18px}.xy-notes .xy-milk{width:149px;top:37px;right:29px}.xy-notes .xy-milk span{font-size:12px;right:0;bottom:29px}.xy-notes .xy-earphones{width:222px;right:6px;top:37px}.xy-notes .xy-song{top:73px;right:30px;font-size:9px}.xy-notes .xy-indices{top:122px}.xy-notes .xy-season{left:-13px}}
 @media(prefers-reduced-motion:reduce){.xy-notes *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* 第三页结尾的窗边照片：图片使用GitHub外链，保留完整画面。 */
+/* 第一页和第三页结尾的照片：图片使用GitHub外链，保留完整画面。 */
 .xy-notes .xy-memory-photo{position:relative;width:calc(100% - 18px);max-width:440px;margin:20px auto 4px;padding:7px 7px 17px;background:#fffdf5;border:1px solid #e8e4d7;box-shadow:1px 3px 7px #52615721,0 9px 16px -12px #455c474d;transform:rotate(-.65deg);transform-origin:center}
 .xy-notes .xy-memory-photo:before{content:"";position:absolute;left:16%;top:-8px;z-index:1;width:66px;height:19px;background:repeating-linear-gradient(0deg,#a5bdc24a 0 1px,#c4d6d376 1px 3px);clip-path:polygon(2% 4%,99% 0,97% 19%,100% 40%,98% 58%,100% 82%,97% 98%,1% 100%,3% 77%,0 55%,2% 37%,0 18%);transform:rotate(-7deg);pointer-events:none}
 .xy-notes .xy-memory-photo img{display:block;width:100%;max-width:100%;height:auto;border:0;border-radius:0;box-shadow:none;object-fit:contain}
-.xy-notes .xy-paper-3 .xy-reading>.xy-paragraph:nth-last-child(2){margin:1.5em 0 .2em}
+.xy-notes .xy-paper-1 .xy-reading>.xy-paragraph:nth-last-child(2),.xy-notes .xy-paper-3 .xy-reading>.xy-paragraph:nth-last-child(2){margin:1.5em 0 .2em}
 @media(max-width:430px){.xy-notes .xy-memory-photo{width:calc(100% - 12px);margin:23px auto 10px;padding:5px 5px 12px}.xy-notes .xy-memory-photo:before{width:49px;height:15px;top:-6px}}
 </style>
 <section class="xy-notes" lang="zh-CN" aria-label="许映雪，三页开场">
@@ -201,7 +201,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 <p class="xy-paragraph">印象里的她一直独来独往，在话题的中心却在圈子的边缘。一个人上下学、一个人课间发呆，体育课解散之后就带着耳机在操场兜圈子。</p>
 <p class="xy-paragraph">“我靠，家里有钱成绩又好，长得还好看。别人的生活我的梦。我要是有这一半，做梦都笑醒”室友们对她的话题也接近了尾声。</p>
 <p class="xy-paragraph">做梦都要笑醒嘛？{{user}}对这句话想了很久……</p>
-<p class="xy-paragraph"><span class="xy-underline">可是为什么，为什么基本上没看过她笑呢？</span></p></div><footer class="xy-footer"><span>01<small>/ 03</small></span><label class="xy-corner" for="xy-c034-2" title="翻开下一张" aria-label="翻开下一张"><span>↗</span></label></footer></article>
+<p class="xy-paragraph"><span class="xy-underline">可是为什么，为什么基本上没看过她笑呢？</span></p>
+<figure class="xy-memory-photo"><img src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/desk-reverie.jpg" width="1000" height="667" alt="许映雪扎着蓝色发带，安静地伏在阳光照进的课桌上。" decoding="async"></figure></div><footer class="xy-footer"><span>01<small>/ 03</small></span><label class="xy-corner" for="xy-c034-2" title="翻开下一张" aria-label="翻开下一张"><span>↗</span></label></footer></article>
 <article class="xy-paper xy-paper-2" aria-labelledby="xy-title-2"><h3 class="xy-title" id="xy-title-2">草莓味的……好喝。</h3><div class="xy-reading" tabindex="0" role="region" aria-label="草莓味的……好喝。，可滚动阅读全文"><p class="xy-paragraph">高一的化学老师是一个满嘴方言的老教师。</p>
 <p class="xy-paragraph">本来快退休了，但是因为化学老师人数暂时不够就由他暂时代一年。</p>
 <p class="xy-paragraph">也是因为这个老师，{{user}}见到了许映雪这三年来最丰富的表情。</p>

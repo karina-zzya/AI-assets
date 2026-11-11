@@ -4,13 +4,14 @@
 
 - `opening.txt`：复制全文粘贴到 HTML 区域。
 - `opening.html`：同一份嵌入片段，不是独立网页。
-- `assets/`：本片段使用的四张图片、标题子集字体及字体许可证。
+- `assets/`：本片段使用的五张图片、标题子集字体及字体许可证。
 
 ## 资源外链
 
 - [assets/classroom-afternoon.jpg](https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/classroom-afternoon.jpg)
 - [assets/strawberry-milk.svg](https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/strawberry-milk.svg)
 - [assets/earbuds.svg](https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/earbuds.svg)
+- [assets/desk-reverie.jpg](https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/desk-reverie.jpg)
 - [assets/earphone-window.jpg](https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/earphone-window.jpg)
 - [assets/xy-note-title.ttf](https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/opening/assets/xy-note-title.ttf)
 
