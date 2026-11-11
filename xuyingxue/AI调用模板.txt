@@ -1,91 +1,285 @@
-许映雪：视觉对话调用模板
+许映雪 对话区与素材外链使用规则（保留原样式，使用专属背景，玩家复用）
 
-把以下内容作为生成约束；它不要求改写既有开场，不要求每轮推进恋爱。
-1. 默认高中时间线，尊重玩家最新行动；不替玩家新写台词、决定、心理或身体接触。许映雪话少、表达不熟练、在小事上有自主；男主懂气氛却以分寸保护自己。已知事实不等于所有角色都知情。
-2. 先延续地点/时间，再沿用已建立服装，再选符合情绪和动作的图。校服是蓝白Polo和长裤；日常装是本次蓝白外套与深蓝褶裙。连续场景不凭空换装，不调用历史白裙。
-3. 十一种情绪：疑惑、微笑、蹙眉、暗暗生气、闹别扭、好奇、偷笑、认真、严肃、生气、害怕；没有待机/害羞/哭泣/递耳机透明差分。无合适动作时保留合理上一张或只显示背景文字。
-4. 男主素材是复用的通用剪影；出现该图不代表可以控制玩家。夜景不自动跳转到毕业重逢，宿舍和家中不默认许映雪在场。
-5. 请求视觉对话时，输出一个自带style的div片段，不带html/head/body或外部说明。CSS限定.xy-dialogue，类名xyd-；不用脚本或事件属性。
-6. 每段radio共享一个全页唯一name；每步id唯一，for指向本段id，input紧邻对应step；第一步且仅第一步checked。复制示例须同步修改所有name/id/for，保持CSS。
-7. 背景cover、立绘contain且等比；文字正常流不裁切。每段2–5步，每步20–80字为宜；末步停在玩家可回应之处，不强迫关系。
-8. 使用下表完整真实URL；保留路径编码，不编造地址，不引用本机文件或Base64。
-9. 文本做HTML转义。玩家名用已知真实显示名或“你”；只有实际验证宿主在当前HTML通道替换正常时才用{{user}}。CSS不会自动读取马甲。
+用途：供 AI 在支持 HTML 和 CSS 的聊天环境中，结合正文生成许映雪的场景对话组件。角色使用已上传的两套透明立绘，背景使用已生成的 12 个专属场景，玩家完全复用参考模板。
 
-情绪动作提醒：01歪头扶下巴摊手；02温和抬手招呼；03触额托臂困扰；04抿唇侧视攥衣摆；05抱臂转开；06前倾背手观察；07掩嘴偷笑；08讲解手势；09掌心向前暂停；10叉腰摊手质问；11后缩防护。
+一、正文与组件的关系
 
-资源ID | 名称 | 完整Raw地址
-school-01 | 校服·疑惑 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_01_%E7%96%91%E6%83%91.png
-school-02 | 校服·微笑 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_02_%E5%BE%AE%E7%AC%91.png
-school-03 | 校服·蹙眉 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png
-school-04 | 校服·暗暗生气 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_04_%E6%9A%97%E6%9A%97%E7%94%9F%E6%B0%94.png
-school-05 | 校服·闹别扭 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_05_%E9%97%B9%E5%88%AB%E6%89%AD.png
-school-06 | 校服·好奇 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_06_%E5%A5%BD%E5%A5%87.png
-school-07 | 校服·偷笑 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_07_%E5%81%B7%E7%AC%91.png
-school-08 | 校服·认真 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png
-school-09 | 校服·严肃 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_09_%E4%B8%A5%E8%82%83.png
-school-10 | 校服·生气 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_10_%E7%94%9F%E6%B0%94.png
-school-11 | 校服·害怕 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_11_%E5%AE%B3%E6%80%95.png
-casual-01 | 日常装·疑惑 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_01_%E7%96%91%E6%83%91.png
-casual-02 | 日常装·微笑 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_02_%E5%BE%AE%E7%AC%91.png
-casual-03 | 日常装·蹙眉 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_03_%E8%B9%99%E7%9C%89.png
-casual-04 | 日常装·暗暗生气 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_04_%E6%9A%97%E6%9A%97%E7%94%9F%E6%B0%94.png
-casual-05 | 日常装·闹别扭 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_05_%E9%97%B9%E5%88%AB%E6%89%AD.png
-casual-06 | 日常装·好奇 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_06_%E5%A5%BD%E5%A5%87.png
-casual-07 | 日常装·偷笑 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_07_%E5%81%B7%E7%AC%91.png
-casual-08 | 日常装·认真 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_08_%E8%AE%A4%E7%9C%9F.png
-casual-09 | 日常装·严肃 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_09_%E4%B8%A5%E8%82%83.png
-casual-10 | 日常装·生气 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_10_%E7%94%9F%E6%B0%94.png
-casual-11 | 日常装·害怕 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_11_%E5%AE%B3%E6%80%95.png
-01-classroom-afternoon | 教室·午后 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg
-02-classroom-evening | 教室·晚自习 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/02-classroom-evening.jpg
-03-corridor-rain | 教学楼走廊·雨天 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/03-corridor-rain.jpg
-04-stairwell-sunset | 楼梯转角·日落 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/04-stairwell-sunset.jpg
-05-canteen-evening | 食堂·傍晚 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/05-canteen-evening.jpg
-06-school-gate-dusk | 校门·黄昏 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/06-school-gate-dusk.jpg
-07-track-sunset | 操场·夕阳 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/07-track-sunset.jpg
-08-library-afternoon | 阅览室·午后 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/08-library-afternoon.jpg
-09-dorm-afternoon | 男生宿舍·午后 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/09-dorm-afternoon.jpg
-10-school-store-day | 小卖部·白天 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/10-school-store-day.jpg
-11-riverside-night | 江边步道·夜晚 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/11-riverside-night.jpg
-12-home-evening | 男主家·傍晚 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/12-home-evening.jpg
-player-idle | 男主·通用待机剪影 | https://raw.githubusercontent.com/karina-zzya/AI-assets/main/%E7%8E%A9%E5%AE%B6/%E7%AB%8B%E7%BB%98/%E7%8E%A9%E5%AE%B6-%E5%BE%85%E6%9C%BA%E7%AB%8B%E7%BB%98.png
+1. 只有许映雪确实出现在当前场景，且情绪、动作、服装与已有素材相符时，才生成组件。
+2. 组件插在正文中间。组件前后保留充分的叙述、动作与对话，不能用组件完全代替正文。
+3. 不要求每轮都生成，不为展示图片强行改变剧情、情绪、服装或地点。
+4. 组件内部只写 HTML 和 CSS，不写说明、Markdown、HTML 注释或 JavaScript；组件外正常输出正文。只有用户单独索取代码时，才只交付代码片段。
+5. 同一段组件表现一个连续场景，建议 3～6 步，约三轮对话。换场景或明确换装时，另起一段更合适。
+6. 每步台词建议不超过 60 个中文字符，长台词拆成多步；正文篇幅不受这个限制。
+7. 不替用户决定尚未表达的选择或行动；没有用户台词依据时，可连续使用许映雪的台词，把场景描述放在组件前后的正文中。
+8. 许映雪的性格、称呼、关系与故事时间线遵循当前角色卡和已发生的正文；本规则不另行改写人设，也不要求关系一定向恋爱发展。
 
-以下为可直接改写的完整示例。编号xyd-m1-a必须在后续片段递增或换成唯一消息键，不能重复。台词为示例，不是固定剧情。
+二、素材外链规则
 
-<div class="xy-dialogue" lang="zh-CN" aria-label="许映雪，留校午后对话">
+角色和背景优先使用已验证的 jsDelivr 地址；加载失败时手动换为同一真实路径的 GitHub Raw 地址。不得用脚本自动换源。玩家图片遵守第七节的固定链接要求。
+
+jsDelivr 根地址：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/
+
+GitHub Raw 根地址：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/
+
+地址组合方式：根地址 + 仓库内的真实路径。
+
+只能使用下列两套服装、11 种情绪与 12 个背景文件。不要翻译、缩写、改字或猜测不存在的路径。中文路径可直接使用，也可按路径段进行一次 UTF-8 URL 编码；保留 /，不要重复编码。
+
+不要把 github.com 的 blob 或 tree 文件预览地址用作 img 的 src。完整外链对照见同目录“外链对照表.csv”和“assets.json”。
+
+本次检查中，“校服 06 好奇”的 jsDelivr 地址返回仓库包大小限制，调用此图时直接使用已验证的 Raw 地址：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_06_%E5%A5%BD%E5%A5%87.png
+其他角色与背景的 jsDelivr 地址已通过本次检查；网络缓存或服务状态变化时按上述规则处理。
+
+三、两套服装的选择
+
+先确定当前服装，再确定表情与动作。本套共 22 张透明 PNG，两套服装各 11 张。许映雪没有形态等级或血量驱动的变身规则。
+
+校服：上课、校内活动、留校等；当前高中留校开场默认使用。
+日常装：正文已经明确换装后的周末、外出等。
+
+没有发生换装时，沿用最近已确认的服装。情绪、好感、信任或场景轻微变化，都不能使服装凭空改变。
+
+校服完整目录前缀：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/校服/
+
+日常装完整目录前缀：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/日常装/
+
+校服文件名：
+许映雪_校服_01_疑惑.png
+许映雪_校服_02_微笑.png
+许映雪_校服_03_蹙眉.png
+许映雪_校服_04_暗暗生气.png
+许映雪_校服_05_闹别扭.png
+许映雪_校服_06_好奇.png
+许映雪_校服_07_偷笑.png
+许映雪_校服_08_认真.png
+许映雪_校服_09_严肃.png
+许映雪_校服_10_生气.png
+许映雪_校服_11_害怕.png
+
+日常装文件名：
+许映雪_日常装_01_疑惑.png
+许映雪_日常装_02_微笑.png
+许映雪_日常装_03_蹙眉.png
+许映雪_日常装_04_暗暗生气.png
+许映雪_日常装_05_闹别扭.png
+许映雪_日常装_06_好奇.png
+许映雪_日常装_07_偷笑.png
+许映雪_日常装_08_认真.png
+许映雪_日常装_09_严肃.png
+许映雪_日常装_10_生气.png
+许映雪_日常装_11_害怕.png
+
+完整有效示例：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/校服/许映雪_校服_02_微笑.png
+
+同一图片的 Raw 备用地址：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/校服/许映雪_校服_02_微笑.png
+
+两位序号是文件名的一部分，不能删除。日常装的目录和文件名均写“日常装”，不能改成“日常”“白裙”或其他历史名称。
+
+四、表情与动作选择
+
+01 疑惑：歪头，一手扶下巴，另一手向上摊开；适用于需要确认、没听懂。
+02 微笑：温和微笑，一手抬起轻轻招呼，身体自然转向；不自动等于喜欢或害羞。
+03 蹙眉：眉心收拢，指尖轻触额侧，另一手托前臂；表现困扰，不直接等于生气。
+04 暗暗生气：抿唇侧视，肩膀微绷，一手攥住衣摆；用于克制的不满。
+05 闹别扭：鼓腮撇嘴，双臂抱胸，身体与视线转开；不自动解释为吃醋。
+06 好奇：眼神明亮，上身小幅前倾，双手放在身后，主动探近观察。
+07 偷笑：弯眼含笑，一手轻掩嘴角，另一手搭在腹前；不等于讥讽。
+08 认真：目光集中，双手作小幅讲解手势，身体略微前倾；适用于专注解释。
+09 严肃：平静坚定，端正站立，一手掌心向前示意暂停；不要当作普通待机。
+10 生气：压眉直视，张口质问，一手叉腰，另一手摊开向前；须有明确情绪依据。
+11 害怕：睁大眼睛，身体后缩，一手胸前防护，另一手抓袖口或前臂，脚步后退。
+
+同一套服装内可随当前步骤的情绪更换图片；不能为了换表情而改用另一套服装。
+一张图只有既定的表情和动作，不把不存在的动作说成图中已经画出。
+本套没有待机、害羞、难过、哭泣或递耳机透明差分，不编造这些路径。没有合适立绘时，不生成组件，继续文字叙述；不新增默认表情，也不删掉人物来修改模板结构。
+
+五、服装与场景一致性
+
+校服：白底蓝领、蓝袖口短袖 Polo，深蓝运动长裤，白色运动鞋。
+日常装：雾蓝薄外套，奶白肩部拼接与深蓝细嵌条；奶白蓝花刺绣 T 恤；深蓝双宽褶 A 字裙；白中筒袜与蓝白运动鞋。
+
+蓝色发带、黑色长马尾是两套立绘的共同识别点。素材以本次上传的压缩包为准，不混入此前的白裙版本。
+如果正文已明确换成其他服装，或场景动作与现有立绘不匹配，就保留文字叙述，暂不插入不相符的组件。
+
+六、十二个专属背景
+
+使用已上传的 xuyingxue/backgrounds/ 目录。不要套用其他角色的背景目录，不新建或猜测“许映雪/背景/”路径。
+
+教室·午后：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg
+适用：留校、自习、窗边交谈；晴日、夏末。
+
+教室·晚自习：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/02-classroom-evening.jpg
+适用：晚自习、考后整理、放学前；室内灯亮、窗外入夜。
+
+教学楼走廊·雨天：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/03-corridor-rain.jpg
+适用：等雨停、课间、并肩走路；雨天或雨后。
+
+楼梯转角·日落：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/04-stairwell-sunset.jpg
+适用：上下楼、短暂停留、放学；夕阳。
+
+食堂·傍晚：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/05-canteen-evening.jpg
+适用：留校吃饭、饭前饭后交流；傍晚、食堂空闲时。
+
+校门·黄昏：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/06-school-gate-dusk.jpg
+适用：离校、等人、返校；黄昏。
+
+操场·夕阳：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/07-track-sunset.jpg
+适用：体育课后、散步、听歌；夕阳。
+
+阅览室·午后：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/08-library-afternoon.jpg
+适用：借书、自习、查资料；日间。
+
+男生宿舍·午后：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/09-dorm-afternoon.jpg
+适用：男主留校日常、午睡后；男主空间；不默认许映雪在场。
+
+小卖部·白天：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/10-school-store-day.jpg
+适用：买饮料文具、放学顺路；白天。
+
+江边步道·夜晚：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/11-riverside-night.jpg
+适用：散步、交谈；明确跳时后可用于重逢；阴云无月；不自动触发毕业剧情。
+
+男主家·傍晚：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/12-home-evening.jpg
+适用：回家、等待家人、安静独处；男主家庭空间；不默认许映雪在场。
+
+背景必须匹配正文的地点、天气与昼夜，没有移动或时间推进就不要随意切图。
+男生宿舍和男主家属于男主空间，不默认许映雪在场；只有她在场且正文与素材合理一致时才生成双人组件。
+江边夜景不自动意味着大学毕业、同学聚会或告白结局；明确跳时后才按新的时间线叙事。
+没有合适背景时可以不生成组件，不为凑图改变地点。所有文件均为 JPG，不把扩展名写成 PNG，也不猜测同一场景未提供的昼夜版本。
+
+七、玩家素材与称呼
+
+玩家形象直接复用参考模板中的同一张图片：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png
+
+保留每一步的玩家图片元素、dg-player 类、位置和尺寸，不删除、不更换、不重新生成玩家形象。玩家 src 按上面的原链接保留，不改成其他目录、编码写法或 Raw 地址。
+
+许映雪名牌写“许映雪”，角色图片 alt 写“许映雪”，不能沿用 Yuki 或李云舒。
+玩家名变量原样保留为 {{user}}，不自行换成固定姓名或“你”。玩家图 alt 和玩家说话时的名牌均保留此变量。
+
+宏替换由宿主负责；保留变量不等于 HTML/CSS 能读取玩家名。此前 v00 的“开场白 HTML”通道存在原样显示变量的问题，本规范不声称已经修复该平台问题，也不通过改写变量或增加脚本绕过。该兼容性说明放在规范中，不放进角色台词。
+
+人物台词、性格和称呼遵循许映雪的设定；已有男主图片不代表可以替用户编造新台词。
+
+八、原代码与样式保留要求
+
+1. 下方模板是生成组件的基准。完整复制原 CSS，一字不改；不重新设计、不精简、不换主题、不新增覆盖样式。
+2. 外层保持 <div class="dg">，style 为第一个子元素；保留原有 dg 系列类名。
+3. 不使用 xy-dialogue、xyd- 或其他替代命名，不增加 max-width，不用 aspect-ratio 替换 padding-top:150%。
+4. 不修改画布比例、立绘尺寸、左右位置、底部位置、对话框尺寸、颜色、字体、边框、圆角和内边距。
+5. 角色与玩家保留 width:52.3%、height:52.3%、bottom:26.5%；左右位置保留 -2.3%。
+6. 不改变透明度、灰度、亮度、位移、等比缩放和 transition:.45s ease。
+7. 保留 dg-in 动画名称、重新开始按钮样式与 1.2 秒延迟。
+8. 玩家 src 完全复用第七节固定链接，{{user}} 原样保留；背景使用第六节专属素材。
+9. 允许随剧情修改的内容只有：角色图片 src 和 alt、背景图片 src、说话人名称、台词、说话方类名、步骤数量和编号。
+10. 不把角色居中，不删除玩家，不新增旁白样式、页码或上一步导航；旁白与说明放在组件外。
+11. 固定对话框的容量不通过改 CSS 解决；长台词拆成多步，不让文字被裁掉。
+12. 台词作为文本正确转义 &、<、>；双引号属性中还需转义双引号。禁止脚本、事件属性、表单和本机路径。
+
+九、多段编号与交互
+
+1. 第 N 段 radio 共用 name="dgN"；第 M 步 id 为 dgN-M。
+2. 同段 radio 共享 name 是正确分组方式；不同段 name 不得重复，所有步骤 id 全页唯一。
+3. 第一段 dg1，第二段 dg2，之后顺延，不重复当前页面已有编号。
+4. label 的 for 必须指向同段真实存在的步骤 id。
+5. input.dg-s 必须紧邻其后的 div.dg-step，保留相邻选择器显示逻辑。
+6. 每段第一步且仅第一步带 checked。
+7. 许映雪说话使用 dg-speak-role，玩家说话使用 dg-speak-player，亮暗效果沿用原 CSS。
+8. 普通步骤用 label.dg-hit 指向下一步；末步换成 label.dg-restart，指向本段第一步。
+9. 原点击推进、末步按钮和延迟出现逻辑不修改。
+10. 增减步骤时，只增减完整 input 与步骤 div 配对结构，同步更新 id、name、for。
+
+十、生成前检查
+
+确认许映雪在场，服装、情绪、动作与正文一致。
+确认背景地点、天气和昼夜正确，使用真实专属背景文件。
+确认玩家图每一步都保留，链接、位置和尺寸与参考模板一致。
+确认许映雪名牌正确，{{user}} 变量原样保留。
+确认 style 与下方模板逐字一致，只替换允许的素材与文字内容。
+确认步骤编号唯一，首步 checked，label 指向有效。
+确认每步台词不超过建议容量，长台词已拆步。
+确认组件插在正文中间，前后仍有充分正文，未代替玩家做决定。
+目标环境需要允许 HTML、style、input、label 和外链图片；不支持时继续正常文字叙述。
+
+十一、原样式模板（只替换许映雪素材与文字）
+
+下面是高中留校、午后教室的三步示例。示例假设玩家已经说过“我看看。”，第二步只复述这句；真实聊天没有这句依据时，不照抄玩家台词，可改成许映雪继续说话并使用 dg-speak-role。
+
+每段完整复制 style，原 CSS 一字不改。正常聊天把这段组件放在充分正文之间，不输出本节的示例说明。
+
+<div class="dg">
 <style>
-.xy-dialogue{box-sizing:border-box;position:relative;isolation:isolate;width:100%;max-width:760px;margin:12px auto;background:#f8f6ef;color:#35474a;border:1px solid #dce2db;border-radius:4px;box-shadow:0 8px 25px #384f4614;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:16px;line-height:1.8;overflow:hidden;text-align:left}.xy-dialogue *{box-sizing:border-box}.xy-dialogue .xyd-state{position:absolute;left:2px;top:2px;width:1px;height:1px;opacity:0;pointer-events:none}.xy-dialogue .xyd-step{display:none}.xy-dialogue .xyd-state:checked+.xyd-step{display:block}.xy-dialogue .xyd-stage{position:relative;height:clamp(310px,62vw,455px);overflow:hidden;background:#cbd6d0}.xy-dialogue .xyd-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.xy-dialogue .xyd-stage:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#203f4b1a,transparent 45%);z-index:1}.xy-dialogue .xyd-actor{position:absolute;bottom:0;width:57%;height:96%;object-fit:contain;object-position:bottom center;z-index:2;opacity:.58;filter:saturate(.7) brightness(.88);transition:opacity .25s,filter .25s}.xy-dialogue .xyd-role{left:-3%}.xy-dialogue .xyd-player{right:-3%}.xy-dialogue .xyd-speak-role .xyd-role,.xy-dialogue .xyd-speak-player .xyd-player{opacity:1;filter:none}.xy-dialogue .xyd-narration .xyd-role{opacity:.92;filter:none}.xy-dialogue .xyd-place{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:3;max-width:calc(100% - 32px);padding:3px 12px;background:#f9f7ede8;border-left:3px solid #6d94b6;color:#4a6470;font-size:12px;letter-spacing:.12em;overflow-wrap:anywhere}.xy-dialogue .xyd-stage-hit{position:absolute;inset:0;z-index:4;cursor:pointer}.xy-dialogue .xyd-copy{position:relative;padding:18px 25px 12px;background:linear-gradient(105deg,#fbf9f1,#edf2ed);border-top:3px solid #91aebd}.xy-dialogue .xyd-name{display:block;margin:0 0 7px;color:#496f8b;font-size:14px;font-weight:600;letter-spacing:.15em;overflow-wrap:anywhere}.xy-dialogue .xyd-narration .xyd-name{color:#7a8778}.xy-dialogue .xyd-speak-player .xyd-name{color:#68765e}.xy-dialogue .xyd-text{margin:0;min-height:3.6em;font-family:"Songti SC","SimSun",serif;font-size:16px;line-height:1.85;letter-spacing:.025em;overflow-wrap:anywhere}.xy-dialogue .xyd-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #849b8c26;font-size:12px;color:#77897c}.xy-dialogue .xyd-control{display:inline-flex;align-items:center;justify-content:center;min-width:48px;min-height:36px;padding:3px 8px;cursor:pointer;color:#506f80;background:transparent;border-bottom:1px solid #6a8d9c66;user-select:none}.xy-dialogue .xyd-control:hover{background:#cbdce444}.xy-dialogue .xyd-count{font-variant-numeric:tabular-nums;letter-spacing:.12em}.xy-dialogue .xyd-state:focus-visible+.xyd-step{outline:3px solid #567c9d;outline-offset:-4px}.xy-dialogue .xyd-control:focus-visible{outline:2px solid #567c9d}.xy-dialogue .xyd-replay{animation:xyd-reveal .3s .8s both}@keyframes xyd-reveal{from{opacity:0}to{opacity:1}}@media(max-width:430px){.xy-dialogue{margin:8px auto}.xy-dialogue .xyd-copy{padding:16px 18px 10px}.xy-dialogue .xyd-place{font-size:11px;top:12px}.xy-dialogue .xyd-text{font-size:15px;line-height:1.9}.xy-dialogue .xyd-actor{width:64%;height:96%}.xy-dialogue .xyd-role{left:-7%}.xy-dialogue .xyd-player{right:-7%}}@media(prefers-reduced-motion:reduce){.xy-dialogue .xyd-actor{transition:none}.xy-dialogue .xyd-replay{animation:none}}
+.dg{position:relative;width:100%;padding-top:150%;overflow:hidden;background:#0b1220;isolation:isolate;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:clamp(12px,3.6vw,17px);line-height:1.7;color:#eaf1ff}
+.dg *{box-sizing:border-box}
+.dg-s{position:absolute;bottom:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.dg-step{position:absolute;top:0;right:0;bottom:0;left:0;display:none}
+.dg-s:checked+.dg-step{display:block}
+.dg-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.dg-role,.dg-player{position:absolute;bottom:26.5%;width:52.3%;height:52.3%;object-fit:contain;object-position:bottom center;opacity:.34;filter:grayscale(.65) brightness(.7);transform:translateY(11.6%) scale(.94);transition:.45s ease}
+.dg-role{left:-2.3%}
+.dg-player{right:-2.3%}
+.dg-speak-role .dg-role,.dg-speak-player .dg-player{opacity:1;filter:none;transform:translateY(-5.2%) scale(1);z-index:2}
+.dg-box{position:absolute;left:4.5%;bottom:3%;width:91%;height:27.3%;padding:3.2% 4.1% 6.4%;border:1px solid rgba(124,199,255,.34);border-radius:12px;background:rgba(6,10,22,.82);overflow:hidden;z-index:3}
+.dg-name{display:inline-block;margin-bottom:.5em;padding:.1em .8em;border-radius:999px;font-size:.92em;font-weight:700;color:#04121f;background:linear-gradient(135deg,#7cc7ff,#cdeaff)}
+.dg-speak-player .dg-name{background:linear-gradient(135deg,#ff9ad5,#ffd3ee)}
+.dg-text{margin:0;font-size:1em;line-height:1.7;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.dg-hit{position:absolute;top:0;right:0;bottom:0;left:0;z-index:6;cursor:pointer}
+.dg-restart{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);z-index:6;padding:.3em 1.2em;border:1px solid rgba(124,199,255,.6);border-radius:999px;background:rgba(14,24,44,.95);color:#eaf1ff;font-size:.82em;font-weight:700;letter-spacing:.1em;white-space:nowrap;cursor:pointer;animation:dg-in .35s ease 1.2s both}
+@keyframes dg-in{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}
 </style>
-<input class="xyd-state" type="radio" name="xyd-m1-a" id="xyd-m1-a-s1" aria-label="第1句" checked>
-<section class="xyd-step xyd-narration">
-<div class="xyd-stage">
-<img class="xyd-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" width="1672" height="941" alt="午后安静的高中教室">
-<img class="xyd-actor xyd-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_06_%E5%A5%BD%E5%A5%87.png" width="1024" height="1536" alt="许映雪，好奇">
-<img class="xyd-actor xyd-player" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/%E7%8E%A9%E5%AE%B6/%E7%AB%8B%E7%BB%98/%E7%8E%A9%E5%AE%B6-%E5%BE%85%E6%9C%BA%E7%AB%8B%E7%BB%98.png" width="1024" height="1536" alt="男主的通用剪影">
-<span class="xyd-place">留校 · 午后</span>
-<label class="xyd-stage-hit" for="xyd-m1-a-s2" aria-label="继续下一句"></label>
-</div>
-<div class="xyd-copy"><b class="xyd-name">旁白</b><p class="xyd-text">窗帘被风抬起一角。许映雪抬眼看了看门口，又把摊开的卷子往自己这边收了收。</p><nav class="xyd-nav" aria-label="对话翻阅"><span class="xyd-count">许映雪</span><span class="xyd-count">01 / 03</span><label class="xyd-control" for="xyd-m1-a-s2" aria-label="下一句">→</label></nav></div>
-</section>
-<input class="xyd-state" type="radio" name="xyd-m1-a" id="xyd-m1-a-s2" aria-label="第2句">
-<section class="xyd-step xyd-speak-role">
-<div class="xyd-stage">
-<img class="xyd-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" width="1672" height="941" alt="午后安静的高中教室">
-<img class="xyd-actor xyd-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png" width="1024" height="1536" alt="许映雪，认真">
-<img class="xyd-actor xyd-player" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/%E7%8E%A9%E5%AE%B6/%E7%AB%8B%E7%BB%98/%E7%8E%A9%E5%AE%B6-%E5%BE%85%E6%9C%BA%E7%AB%8B%E7%BB%98.png" width="1024" height="1536" alt="男主的通用剪影">
-<span class="xyd-place">留校 · 午后</span>
-<label class="xyd-stage-hit" for="xyd-m1-a-s3" aria-label="继续下一句"></label>
-</div>
-<div class="xyd-copy"><b class="xyd-name">许映雪</b><p class="xyd-text">“这道题……你有空看看吗？”<br>她指着空着的那一行，停了一下。</p><nav class="xyd-nav" aria-label="对话翻阅"><label class="xyd-control" for="xyd-m1-a-s1" aria-label="上一句">←</label><span class="xyd-count">02 / 03</span><label class="xyd-control" for="xyd-m1-a-s3" aria-label="下一句">→</label></nav></div>
-</section>
-<input class="xyd-state" type="radio" name="xyd-m1-a" id="xyd-m1-a-s3" aria-label="第3句">
-<section class="xyd-step xyd-speak-role">
-<div class="xyd-stage">
-<img class="xyd-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" width="1672" height="941" alt="午后安静的高中教室">
-<img class="xyd-actor xyd-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_02_%E5%BE%AE%E7%AC%91.png" width="1024" height="1536" alt="许映雪，微笑">
-<img class="xyd-actor xyd-player" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/%E7%8E%A9%E5%AE%B6/%E7%AB%8B%E7%BB%98/%E7%8E%A9%E5%AE%B6-%E5%BE%85%E6%9C%BA%E7%AB%8B%E7%BB%98.png" width="1024" height="1536" alt="男主的通用剪影">
-<span class="xyd-place">留校 · 午后</span>
-</div>
-<div class="xyd-copy"><b class="xyd-name">许映雪</b><p class="xyd-text">“这里还有位置。”<br>她轻轻碰了碰旁边的椅背，没有催促。</p><nav class="xyd-nav" aria-label="对话翻阅"><label class="xyd-control" for="xyd-m1-a-s2" aria-label="上一句">←</label><span class="xyd-count">03 / 03</span><label class="xyd-control xyd-replay" for="xyd-m1-a-s1">重看 ↺</label></nav></div>
-</section>
+
+  <input class="dg-s" type="radio" name="dg1" id="dg1-1" checked>
+  <div class="dg-step dg-speak-role">
+    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <div class="dg-box">
+      <b class="dg-name">许映雪</b>
+      <p class="dg-text">这道题……你有空看看吗？</p>
+    </div>
+    <label class="dg-hit" for="dg1-2" aria-label="继续"></label>
+  </div>
+
+  <input class="dg-s" type="radio" name="dg1" id="dg1-2">
+  <div class="dg-step dg-speak-player">
+    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <div class="dg-box">
+      <b class="dg-name">{{user}}</b>
+      <p class="dg-text">我看看。</p>
+    </div>
+    <label class="dg-hit" for="dg1-3" aria-label="继续"></label>
+  </div>
+
+  <input class="dg-s" type="radio" name="dg1" id="dg1-3">
+  <div class="dg-step dg-speak-role">
+    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png" alt="许映雪">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <div class="dg-box">
+      <b class="dg-name">许映雪</b>
+      <p class="dg-text">这一步我总是算不对。你看，是从这里开始的吗？</p>
+    </div>
+    <label class="dg-restart" for="dg1-1">重新开始</label>
+  </div>
+
 </div>

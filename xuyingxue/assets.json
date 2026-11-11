@@ -16,7 +16,10 @@
     "player": "player-idle"
   },
   "notes": [
-    "情绪没有全局默认值；缺乏适用立绘时可只显示背景与文字。",
+    "情绪没有全局默认值；无匹配立绘、服装或背景时不生成组件，继续正文。",
+    "角色和背景优先已验证CDN；school-06的CDN触发包大小限制，直接使用其Raw地址。",
+    "玩家组件每步保留，并固定使用参考模板原始中文CDN地址及{{user}}。",
+    "样式采用参考dg模板，CSS逐字保留；组件置于充分正文之间。",
     "日常装按本次压缩包，不混入旧版白裙素材。",
     "opening/保留原三页便签及独立资源清单。"
   ],
@@ -796,5 +799,15 @@
         "cdn": "https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/%E7%8E%A9%E5%AE%B6/%E7%AB%8B%E7%BB%98/%E7%8E%A9%E5%AE%B6-%E5%BE%85%E6%9C%BA%E7%AB%8B%E7%BB%98.png"
       }
     }
-  ]
+  ],
+  "rendering": {
+    "style": "dg-reference",
+    "playerSrc": "https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png",
+    "playerName": "{{user}}",
+    "defaultResourceHost": "cdn",
+    "rawFallbackAssetIds": [
+      "school-06"
+    ],
+    "componentPlacement": "正文中间，前后保留充分叙述"
+  }
 }
