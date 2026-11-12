@@ -15,6 +15,7 @@
 .dg-speak-player .dg-name{background:linear-gradient(135deg,#ff9ad5,#ffd3ee)}
 .dg-text{margin:0;font-size:1em;line-height:1.7;text-shadow:0 2px 8px rgba(0,0,0,.6)}
 .dg-hit{position:absolute;top:0;right:0;bottom:0;left:0;z-index:6;cursor:pointer}
+.dg-hit::after{content:"点击继续 ▸";position:absolute;right:8.6%;bottom:4.8%;color:rgba(234,241,255,.68);font-size:clamp(11px,.78em,13px);letter-spacing:.06em;white-space:nowrap;pointer-events:none}
 .dg-restart{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);z-index:6;padding:.3em 1.2em;border:1px solid rgba(124,199,255,.6);border-radius:999px;background:rgba(14,24,44,.95);color:#eaf1ff;font-size:.82em;font-weight:700;letter-spacing:.1em;white-space:nowrap;cursor:pointer;animation:dg-in .35s ease 1.2s both}
 @keyframes dg-in{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}
 </style>
