@@ -22,8 +22,8 @@
 
   <input class="dg-s" type="radio" name="dg1" id="dg1-1" checked>
   <div class="dg-step dg-speak-role">
-    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
-    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
+    <img class="dg-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
     <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
     <div class="dg-box">
       <b class="dg-name">许映雪</b>
@@ -34,8 +34,8 @@
 
   <input class="dg-s" type="radio" name="dg1" id="dg1-2">
   <div class="dg-step dg-speak-player">
-    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
-    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
+    <img class="dg-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
     <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
     <div class="dg-box">
       <b class="dg-name">{{user}}</b>
@@ -46,8 +46,8 @@
 
   <input class="dg-s" type="radio" name="dg1" id="dg1-3">
   <div class="dg-step dg-speak-role">
-    <img class="dg-bg" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
-    <img class="dg-role" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png" alt="许映雪">
+    <img class="dg-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png" alt="许映雪">
     <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
     <div class="dg-box">
       <b class="dg-name">许映雪</b>
