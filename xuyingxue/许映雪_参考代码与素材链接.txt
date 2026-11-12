@@ -1,0 +1,312 @@
+许映雪｜参考代码与素材链接
+
+一、参考代码
+
+示例场景：午后教室。第 1、3 步为许映雪发言，第 2 步为玩家发言。
+
+```html
+<div class="dg">
+<style>
+.dg{position:relative;width:100%;padding-top:150%;overflow:hidden;background:#0b1220;isolation:isolate;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:clamp(12px,3.6vw,17px);line-height:1.7;color:#eaf1ff}
+.dg *{box-sizing:border-box}
+.dg-s{position:absolute;bottom:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.dg-step{position:absolute;top:0;right:0;bottom:0;left:0;display:none}
+.dg-s:checked+.dg-step{display:block}
+.dg-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.dg-role,.dg-player{position:absolute;bottom:26.5%;width:52.3%;height:52.3%;object-fit:contain;object-position:bottom center;opacity:.34;filter:grayscale(.65) brightness(.7);transform:translateY(11.6%) scale(.94);transition:.45s ease}
+.dg-role{left:-2.3%}
+.dg-player{right:-2.3%}
+.dg-speak-role .dg-role,.dg-speak-player .dg-player{opacity:1;filter:none;transform:translateY(-5.2%) scale(1);z-index:2}
+.dg-box{position:absolute;left:4.5%;bottom:3%;width:91%;height:27.3%;padding:3.2% 4.1% 6.4%;border:1px solid rgba(124,199,255,.34);border-radius:12px;background:rgba(6,10,22,.82);overflow:hidden;z-index:3}
+.dg-name{display:inline-block;margin-bottom:.5em;padding:.1em .8em;border-radius:999px;font-size:.92em;font-weight:700;color:#04121f;background:linear-gradient(135deg,#7cc7ff,#cdeaff)}
+.dg-speak-player .dg-name{background:linear-gradient(135deg,#ff9ad5,#ffd3ee)}
+.dg-text{margin:0;font-size:1em;line-height:1.7;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.dg-hit{position:absolute;top:0;right:0;bottom:0;left:0;z-index:6;cursor:pointer}
+.dg-hit::after{content:"点击继续 ▸";position:absolute;right:8.6%;bottom:4.8%;color:rgba(234,241,255,.68);font-size:clamp(11px,.78em,13px);letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+.dg-restart{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);z-index:6;padding:.3em 1.2em;border:1px solid rgba(124,199,255,.6);border-radius:999px;background:rgba(14,24,44,.95);color:#eaf1ff;font-size:.82em;font-weight:700;letter-spacing:.1em;white-space:nowrap;cursor:pointer;animation:dg-in .35s ease 1.2s both}
+@keyframes dg-in{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}
+</style>
+
+  <input class="dg-s" type="radio" name="dg1" id="dg1-1" checked>
+  <div class="dg-step dg-speak-role">
+    <img class="dg-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <div class="dg-box">
+      <b class="dg-name">许映雪</b>
+      <p class="dg-text">这道题……你有空看看吗？</p>
+    </div>
+    <label class="dg-hit" for="dg1-2" aria-label="继续"></label>
+  </div>
+
+  <input class="dg-s" type="radio" name="dg1" id="dg1-2">
+  <div class="dg-step dg-speak-player">
+    <img class="dg-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png" alt="许映雪">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <div class="dg-box">
+      <b class="dg-name">{{user}}</b>
+      <p class="dg-text">我看看。</p>
+    </div>
+    <label class="dg-hit" for="dg1-3" aria-label="继续"></label>
+  </div>
+
+  <input class="dg-s" type="radio" name="dg1" id="dg1-3">
+  <div class="dg-step dg-speak-role">
+    <img class="dg-bg" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg" alt="">
+    <img class="dg-role" src="https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png" alt="许映雪">
+    <img class="dg-player" src="https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png" alt="{{user}}">
+    <div class="dg-box">
+      <b class="dg-name">许映雪</b>
+      <p class="dg-text">这一步我总是算不对。你看，是从这里开始的吗？</p>
+    </div>
+    <label class="dg-restart" for="dg1-1">重新开始</label>
+  </div>
+
+</div>
+```
+
+二、代码含义
+
+dg-bg / dg-role / dg-player：场景背景 / 左侧许映雪立绘 / 右侧玩家剪影。
+src / alt：图片的完整地址 / 图片的文字说明。
+dg-name / dg-text：说话人名牌 / 当前台词。
+dg-speak-role / dg-speak-player：许映雪发言并高亮 / 玩家发言并高亮。
+name="dg1" / id="dg1-2" / checked：第一段对话组 / 第一段第二步 / 初始显示的步骤。
+for="dg1-2"：点击该 label 后显示第一段第二步。
+dg-hit / dg-restart：点击继续 / 末步延迟 1.2 秒出现的重新开始按钮。
+{{user}}：玩家名占位符，由聊天宿主处理替换。
+
+三、素材链接与画面含义
+
+校服立绘（11 张）
+服装：白底蓝领、蓝袖口短袖 Polo，深蓝运动长裤，白色运动鞋。
+
+【school-01】许映雪｜校服｜疑惑
+画面动作：歪头，一手扶下巴，另一手向上摊开，带疑问的目光。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_01_%E7%96%91%E6%83%91.png
+
+【school-02】许映雪｜校服｜微笑
+画面动作：温和微笑，一手抬起轻轻招呼，身体自然转向。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_02_%E5%BE%AE%E7%AC%91.png
+
+【school-03】许映雪｜校服｜蹙眉
+画面动作：眉心收拢，指尖轻触额侧，另一手托前臂，表现困扰。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_03_%E8%B9%99%E7%9C%89.png
+
+【school-04】许映雪｜校服｜暗暗生气
+画面动作：抿唇侧视，肩膀微绷，一手攥住衣摆，压住怒意。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_04_%E6%9A%97%E6%9A%97%E7%94%9F%E6%B0%94.png
+
+【school-05】许映雪｜校服｜闹别扭
+画面动作：鼓腮撇嘴，双臂抱胸，身体与视线转开，表现暂时不理人。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_05_%E9%97%B9%E5%88%AB%E6%89%AD.png
+
+【school-06】许映雪｜校服｜好奇
+画面动作：眼神明亮，上身小幅前倾，双手放到身后，主动探近观察。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_06_%E5%A5%BD%E5%A5%87.png
+
+【school-07】许映雪｜校服｜偷笑
+画面动作：弯眼含笑，一手轻掩嘴角，另一手搭腹前，肩部微收。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_07_%E5%81%B7%E7%AC%91.png
+
+【school-08】许映雪｜校服｜认真
+画面动作：目光集中，双手作小幅讲解手势，身体略微前倾。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_08_%E8%AE%A4%E7%9C%9F.png
+
+【school-09】许映雪｜校服｜严肃
+画面动作：表情平静坚定，端正站立，一手掌心向前示意暂停。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_09_%E4%B8%A5%E8%82%83.png
+
+【school-10】许映雪｜校服｜生气
+画面动作：压眉直视，张口质问，一手叉腰，另一手摊开向前。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_10_%E7%94%9F%E6%B0%94.png
+
+【school-11】许映雪｜校服｜害怕
+画面动作：睁大眼睛，身体后缩，一手胸前防护，另一手抓袖口或前臂，脚步后退。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%A0%A1%E6%9C%8D/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%A0%A1%E6%9C%8D_11_%E5%AE%B3%E6%80%95.png
+
+日常装立绘（11 张）
+服装：雾蓝薄外套，奶白肩部拼接与深蓝细嵌条；奶白蓝花刺绣 T 恤；深蓝双宽褶 A 字裙；白中筒袜与蓝白运动鞋。
+
+【casual-01】许映雪｜日常装｜疑惑
+画面动作：歪头，一手扶下巴，另一手向上摊开，带疑问的目光。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_01_%E7%96%91%E6%83%91.png
+
+【casual-02】许映雪｜日常装｜微笑
+画面动作：温和微笑，一手抬起轻轻招呼，身体自然转向。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_02_%E5%BE%AE%E7%AC%91.png
+
+【casual-03】许映雪｜日常装｜蹙眉
+画面动作：眉心收拢，指尖轻触额侧，另一手托前臂，表现困扰。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_03_%E8%B9%99%E7%9C%89.png
+
+【casual-04】许映雪｜日常装｜暗暗生气
+画面动作：抿唇侧视，肩膀微绷，一手攥住衣摆，压住怒意。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_04_%E6%9A%97%E6%9A%97%E7%94%9F%E6%B0%94.png
+
+【casual-05】许映雪｜日常装｜闹别扭
+画面动作：鼓腮撇嘴，双臂抱胸，身体与视线转开，表现暂时不理人。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_05_%E9%97%B9%E5%88%AB%E6%89%AD.png
+
+【casual-06】许映雪｜日常装｜好奇
+画面动作：眼神明亮，上身小幅前倾，双手放到身后，主动探近观察。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_06_%E5%A5%BD%E5%A5%87.png
+
+【casual-07】许映雪｜日常装｜偷笑
+画面动作：弯眼含笑，一手轻掩嘴角，另一手搭腹前，肩部微收。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_07_%E5%81%B7%E7%AC%91.png
+
+【casual-08】许映雪｜日常装｜认真
+画面动作：目光集中，双手作小幅讲解手势，身体略微前倾。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_08_%E8%AE%A4%E7%9C%9F.png
+
+【casual-09】许映雪｜日常装｜严肃
+画面动作：表情平静坚定，端正站立，一手掌心向前示意暂停。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_09_%E4%B8%A5%E8%82%83.png
+
+【casual-10】许映雪｜日常装｜生气
+画面动作：压眉直视，张口质问，一手叉腰，另一手摊开向前。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_10_%E7%94%9F%E6%B0%94.png
+
+【casual-11】许映雪｜日常装｜害怕
+画面动作：睁大眼睛，身体后缩，一手胸前防护，另一手抓袖口或前臂，脚步后退。
+对应图片元素：dg-role
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/sprites/%E6%97%A5%E5%B8%B8%E8%A3%85/%E8%AE%B8%E6%98%A0%E9%9B%AA_%E6%97%A5%E5%B8%B8%E8%A3%85_11_%E5%AE%B3%E6%80%95.png
+
+场景背景（12 张）
+
+【01-classroom-afternoon】教室·午后
+场景内容：留校、自习、窗边交谈。
+画面条件：晴日、夏末。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/01-classroom-afternoon.jpg
+
+【02-classroom-evening】教室·晚自习
+场景内容：晚自习、考后整理、放学前。
+画面条件：室内灯亮、窗外入夜。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/02-classroom-evening.jpg
+
+【03-corridor-rain】教学楼走廊·雨天
+场景内容：等雨停、课间、并肩走路。
+画面条件：雨天或雨后。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/03-corridor-rain.jpg
+
+【04-stairwell-sunset】楼梯转角·日落
+场景内容：上下楼、短暂停留、放学。
+画面条件：夕阳。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/04-stairwell-sunset.jpg
+
+【05-canteen-evening】食堂·傍晚
+场景内容：留校吃饭、饭前饭后交流。
+画面条件：傍晚、食堂空闲时。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/05-canteen-evening.jpg
+
+【06-school-gate-dusk】校门·黄昏
+场景内容：离校、等人、返校。
+画面条件：黄昏。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/06-school-gate-dusk.jpg
+
+【07-track-sunset】操场·夕阳
+场景内容：体育课后、散步、听歌。
+画面条件：夕阳。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/07-track-sunset.jpg
+
+【08-library-afternoon】阅览室·午后
+场景内容：借书、自习、查资料。
+画面条件：日间。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/08-library-afternoon.jpg
+
+【09-dorm-afternoon】男生宿舍·午后
+场景内容：男主留校日常、午睡后。
+画面条件：男生宿舍，日间。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/09-dorm-afternoon.jpg
+
+【10-school-store-day】小卖部·白天
+场景内容：买饮料文具、放学顺路。
+画面条件：白天。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/10-school-store-day.jpg
+
+【11-riverside-night】江边步道·夜晚
+场景内容：散步、交谈。
+画面条件：夜间，阴云无月。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/11-riverside-night.jpg
+
+【12-home-evening】男主家·傍晚
+场景内容：回家、等待家人、安静独处。
+画面条件：男主家庭空间，傍晚。
+对应图片元素：dg-bg
+完整链接：
+https://raw.githubusercontent.com/karina-zzya/AI-assets/main/xuyingxue/backgrounds/12-home-evening.jpg
+
+玩家立绘（1 张）
+
+【player-idle】男主·通用待机剪影
+画面内容：原模板使用的男主通用待机剪影。
+对应图片元素：dg-player
+完整链接：
+https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png
