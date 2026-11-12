@@ -7,7 +7,9 @@
     "每条素材仅允许使用其src原文",
     "按元素类型、服装、情绪和场景匹配",
     "不拼接、不重编码、不换域名、不生成备用链接",
-    "没有匹配条目或已知加载失败时跳过组件"
+    "没有匹配条目或已知加载失败时跳过组件",
+    "src属性只允许清单中的纯URL，禁止Markdown链接、富文本标记、断裂地址和空白",
+    "检查最终HTML属性的整个原始值，不清洗或重编码后再比对；失败时从对应条目整条重复制"
   ],
   "assets": [
     {
@@ -345,5 +347,22 @@
       "src": "https://cdn.jsdelivr.net/gh/karina-zzya/AI-assets@main/玩家/立绘/玩家-待机立绘.png",
       "elementClass": "dg-player"
     }
-  ]
+  ],
+  "srcValueRules": {
+    "mustStartWith": "https://",
+    "mustMatchWhitelistedSrcExactly": true,
+    "format": "raw-url-string",
+    "forbidWhitespace": true,
+    "httpsPrefixOccurrences": 1,
+    "forbiddenFragments": [
+      "[",
+      "]",
+      "(",
+      ")",
+      "`",
+      "<",
+      ">"
+    ],
+    "repairPolicy": "discard-corrupted-value-and-copy-the-exact-whitelisted-src"
+  }
 }
